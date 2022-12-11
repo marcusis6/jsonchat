@@ -1,6 +1,19 @@
 <script src="emoji-button.js"></script>
 
 <div class="main_section">
+  <i
+    id="minimize-chat-head"
+    style="
+      float: left;
+      margin: -7px -6px 1px 16px;
+      position: fixed;
+      top: 8%;
+      right: 58%;
+      z-index: 1;
+    "
+    class="fa fa-angle-double-up"
+    aria-hidden="true"
+  ></i>
   <div class="container-fluid mt-4 mr-4">
     <div class="chat_container">
       <div
@@ -12,14 +25,14 @@
       <div
         id="noticeBoard"
         class="fixed-top"
-        style="margin-top: 25px; margin-left: 15px; width: 97%"
+        style="margin-left: 15px; width: 97%"
       ></div>
 
       <!--message_section-->
-      <div class="col-sm-9 message_section mt-4">
+      <div class="col-sm-9 message_section">
         <!--new_message_head-->
-        <div class="row" style="position: fixed; width: 79vw; margin-left: 0px">
-          <div class="new_message_head" style="height: 10px">
+        <div class="row" style="width: 79vw; margin-left: 0px">
+          <div id="chat_header" class="new_message_head" style="height: 10px">
             <div class="col-lg ml-2" style="margin-top: -11px">
               <h6>
                 <a href="/admin">এডমিন<i class="fas fa-user"></i></a>
@@ -28,12 +41,7 @@
             <div id="pwd" class="col-lg">
               <h6>
                 <a
-                  style="
-                    color: rgb(248, 107, 55);
-                    float: right;
-                    margin-right: 10px;
-                    margin-top: -25px;
-                  "
+                  style="float: right; margin-right: 10px; margin-top: -25px"
                   href="/password"
                   >পাসওয়ার্ড পাল্টান<i class="fas fa-key"></i
                 ></a>
@@ -44,11 +52,7 @@
         <!--new_message_head-->
 
         <!--chat_area-->
-        <div
-          id="chat1"
-          class="chat_area"
-          style="margin-top: 55px; overflow: auto; height: 70vh"
-        >
+        <div id="chat1" class="chat_area" style="overflow: auto; height: 80%">
           <a href="javascript:" id="jump-to-last"
             ><i class="icon-chevron-up">&#9660;</i></a
           >
@@ -61,7 +65,6 @@
               font-size: 35px;
               right: 8%;
               display: none;
-              color: rgb(245, 122, 0);
             "
             aria-hidden="true"
           ></i>
@@ -73,8 +76,6 @@
           <ul id="chat" class="list-unstyled"></ul>
         </div>
         <!--chat_area-->
-
-        <!--<div style="height: 157vh;"> </div>-->
 
         <!--message_write-->
         <div
@@ -103,12 +104,13 @@
           </div>
           <div class="clearfix"></div>
           <!--	<div class="chat_bottom "><a href="# " class="pull-left upload_btn "><i class="fa fa-cloud-upload " aria-hidden="true "></i>
-												Add Files</a>
-												<a href="# " class="pull-right btn btn-success ">
-												Send</a>
-										 </div>-->
+                      Add Files</a>
+                      <a href="# " class="pull-right btn btn-success ">
+                      Send</a>
+                   </div>-->
         </div>
         <!--message_write-->
+        <!--<div style="height: 157vh;"> </div>-->
       </div>
 
       <!--message_section-->
@@ -116,17 +118,13 @@
       <!--chat_sidebar-->
       <div
         class="col-sm-3 chat_sidebar float-right"
-        style="margin-left: 79%; margin-top: 25px; position: fixed"
+        style="margin-left: 79%; position: fixed; height: 97vh"
       >
-        <div class="row">
+        <div class="row" style="height: 100%">
           <div class="new_message_head" id="time" style="height: 10px">
             <i
               id="minimize"
-              style="
-                float: left;
-                margin: -7px -6px 1px 16px;
-                color: rgb(245, 122, 0);
-              "
+              style="float: left; margin: -7px -6px 1px 16px"
               class="fa fa-window-minimize"
               aria-hidden="true"
             ></i>
@@ -162,18 +160,30 @@
     $(".message_section").toggleClass("col-sm-9");
     $(".chat_sidebar").hide(10);
     $(".active-user").show(10);
-
-    $(".message_section").removeClass("mt-4");
-    $(".message_section").addClass("mt-5");
   });
 
   $(".active-user").on("click", function () {
     $(".message_section").toggleClass("col-sm-9");
     $(".chat_sidebar").show(10);
     $(".active-user").hide(10);
+  });
 
-    $(".message_section").addClass("mt-4");
-    $(".message_section").removeClass("mt-5");
+  $("#minimize-chat-head").on("click", function () {
+    if ($("#minimize-chat-head").hasClass("fa-angle-double-up")) {
+      $("#chat1").css("height", "87%");
+      $("#chat_header").hide(10);
+      $("#minimize-chat-head").removeClass("fa-angle-double-up");
+      $("#minimize-chat-head").addClass("fa-angle-double-down");
+      return;
+    }
+
+    if ($("#minimize-chat-head").hasClass("fa-angle-double-down")) {
+      $("#chat1").css("height", "80%");
+      $("#chat_header").show(10);
+      $("#minimize-chat-head").addClass("fa-angle-double-up");
+      $("#minimize-chat-head").removeClass("fa-angle-double-down");
+      return;
+    }
   });
 </script>
 <script>
@@ -215,6 +225,12 @@
     var counter = 0;
     var history = [];
     var index = -1;
+    socket.emit("load chat"); // chat should be enable or disable ?
+    socket.emit("get notice"); // get notice
+
+    // by default chat is disabled
+    $message.attr("placeholder", "চ্যাট বন্ধ আছে").val("").focus().blur();
+    $message.prop("disabled", true);
 
     setInterval(function () {
       window.location.reload();
@@ -238,28 +254,28 @@
     });
 
     // Load Enabled/Disabled Message Area
-    socket.on("l-chat", function (data, notice, currDate) {
-      if (!data) {
-        $messageBox.children().remove();
-        $messageBox.append(
-          '<textarea disabled id="message" class="form-control" placeholder="চ্যাট বন্ধ আছে" autofocus></textarea>'
-        );
-      }
+    // socket.on("l-chat", function (data, notice, currDate) {
+    //   if (!data) {
+    //     $messageBox.children().remove();
+    //     $messageBox.append(
+    //       '<textarea disabled id="message" class="form-control" placeholder="চ্যাট বন্ধ আছে" autofocus></textarea>'
+    //     );
+    //   }
 
-      $notice.children().remove();
-      $notice.append(
-        '<marquee id="notice" behavior="scroll" direction="left" style="height: 25px; background-color: lightblue;">নোটিসঃ ' +
-          notice +
-          "</marquee>"
-      );
+    //   $notice.children().remove();
+    //   $notice.append(
+    //     '<marquee id="notice" behavior="scroll" direction="left" style="height: 25px; background-color: lightblue;">নোটিসঃ ' +
+    //       notice +
+    //       "</marquee>"
+    //   );
 
-      $date.children().remove();
-      $date.append(
-        '<p style="height: 25px; background-color: white; text-align: center" id="date">তারিখঃ ' +
-          currDate +
-          "</p>"
-      );
-    });
+    //   $date.children().remove();
+    //   $date.append(
+    //     '<p style="height: 25px; background-color: white; text-align: center" id="date">তারিখঃ ' +
+    //       currDate +
+    //       "</p>"
+    //   );
+    // });
 
     // Delete Messages
     socket.on("chat deleted", function () {
@@ -269,7 +285,8 @@
     });
 
     // Chat Option Toggled
-    socket.on("toggled", function (data) {
+    socket.on("chat-toggle", function (data) {
+      console.log("dash");
       //$messageBox.children().remove();
       if (data) {
         $message.attr("placeholder", "এখানে লিখুন...").val("").focus().blur();
@@ -454,6 +471,9 @@
           '" message_id="' +
           data._id +
           '" href="javascript:"><i class="fas fa-trash"></i></a>';
+      } else {
+        var audio = new Audio("/notification.wav");
+        audio.play();
       }
 
       $("ul#chat > li.pending").remove();
@@ -495,9 +515,6 @@
       } else {
         unread = 0;
       }
-
-      var audio = new Audio("/notification.wav");
-      audio.play();
     });
 
     // Old message prepend on startup

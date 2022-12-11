@@ -102,63 +102,73 @@ let key = crypto.randomBytes(32);
 let iv = crypto.randomBytes(16);
 
 function encrypt(text) {
-  let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return encrypted.toString("hex");
+  try {
+    let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return encrypted.toString("hex");
+  } catch (ex) {
+    console.log(ex);
+    return "failed to encrypt";
+  }
 }
 
 function decrypt(text) {
-  let encryptedText = Buffer.from(text, "hex");
-  let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
-  let decrypted = decipher.update(encryptedText);
-  decrypted = Buffer.concat([decrypted, decipher.final()]);
-  return decrypted.toString();
+  try {
+    let encryptedText = Buffer.from(text, "hex");
+    let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+  } catch (ex) {
+    console.log(ex);
+    return "failed to decrypt";
+  }
 }
 
-setInterval(function () {
-  users = tmpUsers;
-  users.sort((a, b) => (a.time > b.time ? 1 : -1));
-  io.sockets.emit("get users", users);
+// setInterval(function () {
+//   users = tmpUsers;
+//   users.sort((a, b) => (a.time > b.time ? 1 : -1));
+//   io.sockets.emit("get users", users);
 
-  tmpUsers = []; // remove all users from the array
-  // Emit for active users response
-  io.sockets.emit("response");
-  setInterval(function () {
-    io.sockets.emit("response");
-  }, 60000);
-  // console.log("response called");
-}, 300000);
+//   tmpUsers = []; // remove all users from the array
+//   // Emit for active users response
+//   io.sockets.emit("response");
+//   setInterval(function () {
+//     io.sockets.emit("response");
+//   }, 60000);
+//   // console.log("response called");
+// }, 300000);
 
-setInterval(function () {
-  let currDate = hijriDate;
-  //rp("https://timesprayer.com/en/hijri-date-in-bangladesh.html")
-  rp("https://habibur.com")
-    .then((html) => {
-      //currDate = cheerio(".prayertable > table > tbody > tr:nth-child(1) > td:nth-child(2)", html).text();
-      currDate =
-        cheerio(
-          ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(1)",
-          html
-        ).text() +
-        " " +
-        cheerio(
-          ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(2) > a",
-          html
-        ).text() +
-        " " +
-        cheerio(
-          ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(3) > a",
-          html
-        ).text();
-      if (currDate !== hijriDate) {
-        hijriDate = currDate;
-        io.sockets.emit("date updated", chatOption);
-      }
-    })
-    .catch((err) => console.log(err));
-  //currDate = new HijriDate();
-}, 300000);
+// setInterval(function () {
+//   let currDate = hijriDate;
+//   //rp("https://timesprayer.com/en/hijri-date-in-bangladesh.html")
+//   rp("https://habibur.com")
+//     .then((html) => {
+//       //currDate = cheerio(".prayertable > table > tbody > tr:nth-child(1) > td:nth-child(2)", html).text();
+//       currDate =
+//         cheerio(
+//           ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(1)",
+//           html
+//         ).text() +
+//         " " +
+//         cheerio(
+//           ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(2) > a",
+//           html
+//         ).text() +
+//         " " +
+//         cheerio(
+//           ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(3) > a",
+//           html
+//         ).text();
+//       if (currDate !== hijriDate) {
+//         hijriDate = currDate;
+//         io.sockets.emit("date updated", chatOption);
+//       }
+//     })
+//     .catch((err) => console.log(err));
+//   //currDate = new HijriDate();
+// }, 300000);
 
 // Connection
 io.sockets.on("connection", function (socket) {
@@ -177,6 +187,15 @@ io.sockets.on("connection", function (socket) {
   let unrecognized = false;
   if (firstLoad) {
     firstLoad = false;
+
+    // Need to delete notice as old encryption will not work
+    const chat = "./storage/chat.json";
+    fs.unlink(chat, (err) => {
+      if (err) {
+        return;
+      }
+    });
+
     if (output.length > 0) {
       io.sockets.emit("chat deleted");
 
@@ -210,8 +229,8 @@ io.sockets.on("connection", function (socket) {
     socket.emit("output", output);
   }
 
-  //socket.on("load chat", function() {
-  if (chatOption === "undefined") {
+  socket.on("load chat", function () {
+    let chatOption = false;
     (async function () {
       let chat;
       chat = getAll("./storage/chat.json");
@@ -222,12 +241,13 @@ io.sockets.on("connection", function (socket) {
     })()
       .then((chat) => {
         if (chat) {
-          chatOption = chat.isEnabled;
+          chatOption = chat[0].isEnabled;
         } else {
           chatOption = true;
           let newChat = new Chat({
             key: "chat",
             isEnabled: true,
+            notice: "",
           });
           (async function () {
             let chat = Append("./storage/chat.json", newChat);
@@ -238,52 +258,73 @@ io.sockets.on("connection", function (socket) {
             })
             .catch((err) => console.log(err));
         }
+        socket.emit("chat-toggle", chatOption);
       })
       .catch((err) => console.log(err));
-  }
+  });
   //rp("https://timesprayer.com/en/hijri-date-in-bangladesh.html")
-  rp("https://habibur.com")
-    .then((html) => {
-      //hijriDate = cheerio(".prayertable > table > tbody > tr:nth-child(1) > td:nth-child(2)", html).text();
-      hijriDate =
-        cheerio(
-          ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(1)",
-          html
-        ).text() +
-        " " +
-        cheerio(
-          ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(2) > a",
-          html
-        ).text() +
-        " " +
-        cheerio(
-          ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(3) > a",
-          html
-        ).text();
-      socket.emit("l-chat", chatOption, notice, hijriDate);
-      socket.emit("l-toggle", chatOption);
-    })
-    .catch((err) => console.log(err));
+  // rp("https://habibur.com")
+  //   .then((html) => {
+  //     //hijriDate = cheerio(".prayertable > table > tbody > tr:nth-child(1) > td:nth-child(2)", html).text();
+  //     hijriDate =
+  //       cheerio(
+  //         ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(1)",
+  //         html
+  //       ).text() +
+  //       " " +
+  //       cheerio(
+  //         ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(2) > a",
+  //         html
+  //       ).text() +
+  //       " " +
+  //       cheerio(
+  //         ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(3) > a",
+  //         html
+  //       ).text();
+  //     socket.emit("l-chat", chatOption, notice, hijriDate);
+  //     socket.emit("l-toggle", chatOption);
+  //   })
+  //   .catch((err) => console.log(err));
   //hijriDate = new HijriDate();
   //});
 
-  // Delete Notice
-  socket.on("upd", function (data) {
-    notice = data;
+  // Save Notice
+  socket.on("notice", function (data) {
+    if (data) {
+      let chat = getAll("./storage/chat.json");
+      chat.forEach((item) => {
+        if (item.key === "chat") {
+          item.notice = encrypt(data);
+          Update("./storage/chat.json", chat);
+        }
+      });
+    }
     // Send notice change event
-    io.sockets.emit("notice updated", notice);
+    io.sockets.emit("notice updated", data);
+  });
+
+  // Get Notice
+  socket.on("get notice", function () {
+    let chat = getAll("./storage/chat.json");
+    chat.forEach((item) => {
+      if (item.key === "chat") {
+        let notice = "";
+        if (item.notice) {
+          notice = decrypt(item.notice);
+        }
+        // Send notice change event
+        io.sockets.emit("notice updated", notice);
+      }
+    });
   });
 
   // Toggle Chat Mode
-  socket.on("toggle now", function () {
+  socket.on("toggle chat", function () {
     if (chatOption) {
       chatOption = false;
     } else {
       chatOption = true;
     }
-
-    // Send toggle event
-    io.sockets.emit("toggled", chatOption);
 
     let chat = getAll("./storage/chat.json");
     chat.forEach((item) => {
@@ -292,6 +333,9 @@ io.sockets.on("connection", function (socket) {
         Update("./storage/chat.json", chat);
       }
     });
+
+    // Send toggle event
+    io.sockets.emit("chat-toggle", chatOption);
   });
 
   // Download chat
@@ -323,7 +367,13 @@ io.sockets.on("connection", function (socket) {
 
   // Delete all chats
   socket.on("dlt", function () {
-    io.sockets.emit("chat deleted");
+    // Need to delete notice as old encryption will not work
+    const chat = "./storage/chat.json";
+    fs.unlink(chat, (err) => {
+      if (err) {
+        return;
+      }
+    });
 
     const chatlog = "./routes/chatlog.txt";
     const messages = "./storage/messages.json";
@@ -346,14 +396,7 @@ io.sockets.on("connection", function (socket) {
       }
     });
 
-    const path = "./routes/chatlog.txt";
-
-    fs.unlink(path, (err) => {
-      if (err) {
-        // console.error(err)
-        return;
-      }
-    });
+    io.sockets.emit("chat deleted");
   });
 
   // Load approved users
