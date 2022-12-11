@@ -127,20 +127,6 @@ function decrypt(text) {
 }
 
 // setInterval(function () {
-//   users = tmpUsers;
-//   users.sort((a, b) => (a.time > b.time ? 1 : -1));
-//   io.sockets.emit("get users", users);
-
-//   tmpUsers = []; // remove all users from the array
-//   // Emit for active users response
-//   io.sockets.emit("response");
-//   setInterval(function () {
-//     io.sockets.emit("response");
-//   }, 60000);
-//   // console.log("response called");
-// }, 300000);
-
-// setInterval(function () {
 //   let currDate = hijriDate;
 //   //rp("https://timesprayer.com/en/hijri-date-in-bangladesh.html")
 //   rp("https://habibur.com")
@@ -569,6 +555,32 @@ io.sockets.on("connection", function (socket) {
     }
   });
 
+  // hajira
+  socket.on("hajira", function (data, callback) {
+    console.log("came");
+    ut = { username: data.user, time: data.time };
+    nope = true;
+    tmpNope = true;
+
+    for (var x = 0; x < users.length; x++) {
+      if (users[x].username === data.user) {
+        nope = false;
+      }
+    }
+
+    for (var x = 0; x < tmpUsers.length; x++) {
+      if (tmpUsers[x].username === data.user) {
+        tmpNope = false;
+      }
+    }
+
+    if (nope) {
+      users.push(ut);
+      if (tmpNope) {
+        tmpUsers.push(ut);
+      }
+    }
+  });
   // User Disconnect
   /*socket.on("disconnect", function() {
     setTimeout(function() {
@@ -665,6 +677,9 @@ io.sockets.on("connection", function (socket) {
         });
       })
       .catch((err) => console.log(err));
+
+    var clients = io.sockets.clients();
+    console.log(clients);
   });
 
   function updateUsernames() {
@@ -672,6 +687,12 @@ io.sockets.on("connection", function (socket) {
     socket.emit("get users", users);
   }
 });
+
+setInterval(function () {
+  console.log("called");
+  io.sockets.emit("get users", users);
+  users = [];
+}, 30000);
 
 module.exports.func = (user) => {
   io.sockets.emit("registered", user, totalPending);

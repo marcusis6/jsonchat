@@ -2,7 +2,7 @@
 
 <div class="main_section">
   <i
-    id="minimize-chat-head"
+    id="minimize-sidebar-chat-head"
     style="
       float: left;
       margin: -7px -6px 1px 16px;
@@ -14,6 +14,14 @@
     class="fa fa-angle-double-up"
     aria-hidden="true"
   ></i>
+
+  <i
+    id="minimize-sidebar"
+    style="position: fixed; top: 47%; right: 18%; font-size: 17px; z-index: 10"
+    aria-hidden="true"
+    class="fa fa-angle-double-right"
+  ></i>
+
   <div class="container-fluid mt-4 mr-4">
     <div class="chat_container">
       <div
@@ -56,18 +64,6 @@
           <a href="javascript:" id="jump-to-last"
             ><i class="icon-chevron-up">&#9660;</i></a
           >
-
-          <i
-            class="active-user fa fa-users"
-            style="
-              position: fixed;
-              top: 7.5%;
-              font-size: 35px;
-              right: 8%;
-              display: none;
-            "
-            aria-hidden="true"
-          ></i>
 
           <div id="loadmore" style="text-align: center">
             <a href="javascript:">আরো দেখব</a>
@@ -121,27 +117,16 @@
         style="margin-left: 79%; position: fixed; height: 97vh"
       >
         <div class="row" style="height: 100%">
-          <div class="new_message_head" id="time" style="height: 10px">
-            <i
-              id="minimize"
-              style="float: left; margin: -7px -6px 1px 16px"
-              class="fa fa-window-minimize"
-              aria-hidden="true"
-            ></i>
-            <button
-              id="button"
-              type="button"
-              class="btn btn-danger"
-              style="
-                float: left;
-                margin-left: 18%;
-                margin-right: 18%;
-                margin-top: -19px;
-              "
-            >
-              লগ আউট
-            </button>
-          </div>
+          <button
+            id="button"
+            type="button"
+            class="btn btn-danger"
+            style="position: fixed; top: 4%; right: 3%"
+          >
+            লগ আউট
+          </button>
+
+          <div class="new_message_head" id="time" style="height: 10px"></div>
 
           <div class="member_list" style="width: 100%; overflow: auto">
             <ul id="users" class="list-unstyled"></ul>
@@ -156,32 +141,39 @@
 </div>
 
 <script>
-  $("#minimize").on("click", function () {
-    $(".message_section").toggleClass("col-sm-9");
-    $(".chat_sidebar").hide(10);
-    $(".active-user").show(10);
-  });
-
-  $(".active-user").on("click", function () {
-    $(".message_section").toggleClass("col-sm-9");
-    $(".chat_sidebar").show(10);
-    $(".active-user").hide(10);
-  });
-
-  $("#minimize-chat-head").on("click", function () {
-    if ($("#minimize-chat-head").hasClass("fa-angle-double-up")) {
-      $("#chat1").css("height", "87%");
-      $("#chat_header").hide(10);
-      $("#minimize-chat-head").removeClass("fa-angle-double-up");
-      $("#minimize-chat-head").addClass("fa-angle-double-down");
+  $("#minimize-sidebar").on("click", function () {
+    console.log("clicked");
+    if ($("#minimize-sidebar").hasClass("fa-angle-double-right")) {
+      $(".message_section").toggleClass("col-sm-9");
+      $(".chat_sidebar").hide(10);
+      $("#minimize-sidebar").removeClass("fa-angle-double-right");
+      $("#minimize-sidebar").addClass("fa-angle-double-left");
       return;
     }
 
-    if ($("#minimize-chat-head").hasClass("fa-angle-double-down")) {
+    if ($("#minimize-sidebar").hasClass("fa-angle-double-left")) {
+      $(".message_section").toggleClass("col-sm-9");
+      $(".chat_sidebar").show(10);
+      $("#minimize-sidebar").removeClass("fa-angle-double-left");
+      $("#minimize-sidebar").addClass("fa-angle-double-right");
+      return;
+    }
+  });
+
+  $("#minimize-sidebar-chat-head").on("click", function () {
+    if ($("#minimize-sidebar-chat-head").hasClass("fa-angle-double-up")) {
+      $("#chat1").css("height", "87%");
+      $("#chat_header").hide(10);
+      $("#minimize-sidebar-chat-head").removeClass("fa-angle-double-up");
+      $("#minimize-sidebar-chat-head").addClass("fa-angle-double-down");
+      return;
+    }
+
+    if ($("#minimize-sidebar-chat-head").hasClass("fa-angle-double-down")) {
       $("#chat1").css("height", "80%");
       $("#chat_header").show(10);
-      $("#minimize-chat-head").addClass("fa-angle-double-up");
-      $("#minimize-chat-head").removeClass("fa-angle-double-down");
+      $("#minimize-sidebar-chat-head").addClass("fa-angle-double-up");
+      $("#minimize-sidebar-chat-head").removeClass("fa-angle-double-down");
       return;
     }
   });
@@ -601,6 +593,12 @@
         $lmore.hide();
       }
     });
+
+    setInterval(function () {
+      let t = moment().tz("Asia/Dhaka").format("a h:mm");
+      socket.emit("hajira", { user: $user, time: t });
+      console.log("response called");
+    }, 18000);
 
     // Jump to Last msg funtionality
     var jump_to_button = $("#jump-to-last");
