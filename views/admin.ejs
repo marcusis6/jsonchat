@@ -1,27 +1,42 @@
-<div class="main_section">
-  <div class="container-fluid mt-4 mr-4">
-    <div class="row chat_container">
-      <!--message_section-->
-      <div class="col-sm-8 message_section">
-        <div class="new_message_head">
-          <ul class="nav nav-pills" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" data-toggle="pill" href="#chat1"
-                >Users</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" data-toggle="pill" href="#chatOptions"
-                >Settings</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/dashboard"
-                ><i class="fas fa-arrow-circle-left"></i> Back To Room</a
-              >
-            </li>
-          </ul>
-        </div>
+<nav class="navbar navbar-light sticky-top bg-light flex-md-nowrap p-0 shadow">
+  <ul class="nav nav-pills m-2" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="pill" href="#chat1">Users</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="pill" href="#users1">Pending Users</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="pill" href="#chatOptions">Settings</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/dashboard"
+        ><i class="fas fa-arrow-circle-left"></i> Back To Room</a
+      >
+    </li>
+  </ul>
+
+  <div id="pageMessages">
+  </div>
+  <form class="form-inline my-2 my-lg-0">
+    <a
+      class="btn btn-outline-success my-2 my-sm-0 mr-2"
+      type="a"
+      href="/password"
+    >
+      Change Password
+    </a>
+  </form>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <main
+      role="main"
+      class="col-md-12 mr-sm-auto col-lg-12 px-md-4 main-section"
+      style="padding-top: 7rem; overflow-y: auto;"
+    >
+      <div class="d-flex flex-column h-100 justify-content-between bg-light">
         <div class="tab-content">
           <div id="chatOptions" class="container tab-pane fade">
             <div
@@ -54,8 +69,8 @@
                   ></textarea>
                 </div>
                 <button
+                  type="button"
                   id="notice-button"
-                  type="submit"
                   class="btn btn-primary mb-2"
                 >
                   Update Notice
@@ -67,13 +82,21 @@
               </button>
             </div>
           </div>
+          <div id="users1" class="member_list mt-4 container tab-pane fade" style="width: 100%">
+            <div id="loadpending" style="text-align: center">
+              <a href="javascript:">আরো দেখব</a>
+            </div>
+  
+            <ul id="users" class="list-unstyled list-group"></ul>
+            <h2 style="display: none" id="admin-usr"><%=name %></h2>
+          </div>
           <!--chat_area-->
           <div id="chat1" class="chat_area container tab-pane active">
             <div id="loaduser" style="text-align: center">
               <a href="javascript:">আরো দেখব</a>
             </div>
 
-            <ul id="chat" class="list-unstyled"></ul>
+            <ul id="chat" class="list-unstyled list-group"></ul>
             <div>
               <a href="javascript:" id="jump-to-last"
                 ><i class="icon-chevron-up">&#9660;</i></a
@@ -82,39 +105,9 @@
           </div>
           <!--chat_area-->
         </div>
-      </div>
-
-      <!--message_section-->
-
-      <!--chat_sidebar-->
-      <div class="col-sm-4 chat_sidebar float-right">
-        <div class="row">
-          <div class="new_message_head" id="time">
-            <button
-              id="button"
-              type="button"
-              class="btn btn-danger"
-              style="top: 4%; position: fixed; right: 13%"
-            >
-              লগ আউট
-            </button>
-          </div>
-        </div>
-
-        <div id="users1" class="member_list" style="width: 100%">
-          <div id="loadpending" style="text-align: center">
-            <a href="javascript:">আরো দেখব</a>
-          </div>
-          <a href="javascript:" id="jump-to-last-pending"
-            ><i class="icon-chevron-up">&#9660;</i></a
-          >
-
-          <ul id="users" class="list-unstyled"></ul>
         </div>
       </div>
-      <!--chat_sidebar-->
-      <h2 style="display: none" id="admin-usr"><%=name %></h2>
-    </div>
+    </main>
   </div>
 </div>
 
@@ -141,10 +134,10 @@
     }, 900000);
 
     // Active Response
-    socket.on("response", () => {
-      let t = moment().tz("Asia/Dhaka").format("a h:mm");
-      socket.emit("actRes", { user: $user, time: t });
-    });
+    // socket.on("response", () => {
+    //   let t = moment().tz("Asia/Dhaka").format("a h:mm");
+    //   socket.emit("actRes", { user: $user, time: t });
+    // });
 
     // Logout
     $("#button").click(function () {
@@ -154,19 +147,19 @@
 
     // Delete Notice
     $("#dlt-notice").click(function () {
-      console.log("notice deleted");
       socket.emit("notice", "");
+      createAlert('','','Notice Deleted Successfully.','success',false,true,'pageMessages');
     });
 
     socket.on("registered", function (data, index) {
       $users.append(
-        '<li class="left clearfix "> <div class="row chat-body1 clearfix "> <div class="col-sm-4"><p class="text-primary text-center"><b>' +
+        '<li class="left clearfix list-group-item list-group-item-action list-group-item-success m-2"> <div class="row chat-body1 clearfix "> <div class="col-sm-4"><p class="text-primary text-center"><b>' +
           data.name +
-          '</b></p></div><div class="col-sm-4"><button class="btn btn-success" id="approve' +
+          '</b></p></div><div class="col-sm-4"><button class="btn my-2 my-sm-0 mr-2 btn-success" id="approve' +
           index +
           '" value="' +
           data.name +
-          '" >Approve</button></div><div class="col-sm-4"><button class="btn btn-danger" id="disapprove' +
+          '" >Approve</button></div><div class="col-sm-4"><button class="btn my-2 my-sm-0 mr-2 btn-danger" id="disapprove' +
           index +
           '" value="' +
           data.name +
@@ -228,7 +221,8 @@
       msg = $("#notice-body").val();
       if ($.trim(msg).length > 0) {
         socket.emit("notice", msg);
-        $notice_body.val("");
+        $("#notice-body").val("");
+        createAlert('','','Notice Updated Successfully.','success',false,true,'pageMessages');
       }
     });
 
@@ -242,13 +236,13 @@
     // New user approved
     socket.on("new approved", function (data, index) {
       $chat.append(
-        '<li class="left clearfix "> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
+        '<li class="left clearfix list-group-item list-group-item-action list-group-item-success m-2"> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
           data.name +
-          '</b></p></div><div class="col-sm-4 access-role"><button class="btn btn-success" id="change' +
+          '</b></p></div><div class="col-sm-4 access-role"><button class="btn my-2 my-sm-0 mr-2 btn-success" id="change' +
           index +
           '" value="' +
           data.name +
-          '" >Make Admin</button></div><div class="col-sm-2"><button class="btn btn-danger" id="delete' +
+          '" >Make Admin</button></div><div class="col-sm-2"><button class="btn my-2 my-sm-0 mr-2 btn-danger" id="delete' +
           index +
           '" value="' +
           data.name +
@@ -290,15 +284,15 @@
           }
           if (!data[x].isSuperAdmin) {
             $chat.prepend(
-              '<li class="left clearfix "> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
+              '<li class="left clearfix list-group-item list-group-item-action list-group-item-success m-2"> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
                 data[x].name +
-                '</b></p></div><div class="col-sm-4 access-role"><button class="btn btn-success" id="change' +
+                '</b></p></div><div class="col-sm-4 access-role"><button class="btn my-2 my-sm-0 mr-2 btn-success" id="change' +
                 x +
                 '" value="' +
                 data[x].name +
                 '" >' +
                 roleBtn +
-                '</button></div><div class="col-sm-2"><button class="btn btn-danger" id="delete' +
+                '</button></div><div class="col-sm-2"><button class="btn my-2 my-sm-0 mr-2 btn-danger" id="delete' +
                 x +
                 '" value="' +
                 data[x].name +
@@ -308,15 +302,15 @@
             );
           } else {
             $chat.prepend(
-              '<li class="left clearfix "> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
+              '<li class="left clearfix list-group-item list-group-item-action list-group-item-success m-2"> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
                 data[x].name +
-                '</b></p></div><div class="col-sm-4 access-role"><button class="btn btn-success" disabled id="change' +
+                '</b></p></div><div class="col-sm-4 access-role"><button class="btn my-2 my-sm-0 mr-2 btn-success" disabled id="change' +
                 x +
                 '" value="' +
                 data[x].name +
                 '" >' +
                 roleBtn +
-                '</button></div><div class="col-sm-2"><button class="btn btn-danger" disabled id="delete' +
+                '</button></div><div class="col-sm-2"><button class="btn my-2 my-sm-0 mr-2 btn-danger" disabled id="delete' +
                 x +
                 '" value="' +
                 data[x].name +
@@ -336,13 +330,13 @@
       if (data.length) {
         for (var x = 0; x < data.length; x++) {
           $users.prepend(
-            '<li class="left clearfix "> <div class="row chat-body1 clearfix "> <div class="col-sm-4"><p class="text-info text-center"><b>' +
+            '<li class="left clearfix list-group-item list-group-item-action list-group-item-success m-2"> <div class="row chat-body1 clearfix "> <div class="col-sm-4"><p class="text-info text-center"><b>' +
               data[x].name +
-              '</b></p></div><div class="col-sm-4"><button class="btn btn-success" id="approve' +
+              '</b></p></div><div class="col-sm-4"><button class="btn my-2 my-sm-0 mr-2 btn-success" id="approve' +
               x +
               '" value="' +
               data[x].name +
-              '" >Approve</button></div><div class="col-sm-4"><button class="btn btn-danger" id="disapprove' +
+              '" >Approve</button></div><div class="col-sm-4"><button class="btn my-2 my-sm-0 mr-2 btn-danger" id="disapprove' +
               x +
               '" value="' +
               data[x].name +
@@ -393,15 +387,15 @@
           }
           if (!data[x].isSuperAdmin) {
             $chat.prepend(
-              '<li class="left clearfix "> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
+              '<li class="left clearfix list-group-item list-group-item-action list-group-item-success m-2"> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
                 data[x].name +
-                '</b></p></div><div class="col-sm-4 access-role"><button class="btn btn-success" id="change' +
+                '</b></p></div><div class="col-sm-4 access-role"><button class="btn my-2 my-sm-0 mr-2 btn-success" id="change' +
                 x +
                 '" value="' +
                 data[x].name +
                 '" >' +
                 roleBtn +
-                '</button></div><div class="col-sm-2"><button class="btn btn-danger" id="delete' +
+                '</button></div><div class="col-sm-2"><button class="btn my-2 my-sm-0 mr-2 btn-danger" id="delete' +
                 x +
                 '" value="' +
                 data[x].name +
@@ -411,15 +405,15 @@
             );
           } else {
             $chat.prepend(
-              '<li class="left clearfix "> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
+              '<li class="left clearfix list-group-item list-group-item-action list-group-item-success m-2"> <div class="row chat-body1 clearfix "> <div class="col-sm-2"><p class="text-info text-center"><b>' +
                 data[x].name +
-                '</b></p></div><div class="col-sm-4 access-role"><button class="btn btn-success" disabled id="change' +
+                '</b></p></div><div class="col-sm-4 access-role"><button class="btn my-2 my-sm-0 mr-2 btn-success" disabled id="change' +
                 x +
                 '" value="' +
                 data[x].name +
                 '" >' +
                 roleBtn +
-                '</button></div><div class="col-sm-2"><button class="btn btn-danger" disabled id="delete' +
+                '</button></div><div class="col-sm-2"><button class="btn my-2 my-sm-0 mr-2 btn-danger" disabled id="delete' +
                 x +
                 '" value="' +
                 data[x].name +
@@ -439,13 +433,13 @@
       if (data.length) {
         for (var x = 0; x < data.length; x++) {
           $users.prepend(
-            '<li class="left clearfix "> <div class="row chat-body1 clearfix "> <div class="col-sm-4"><p class="text-info text-center"><b>' +
+            '<li class="left clearfix list-group-item list-group-item-action list-group-item-success m-2"> <div class="row chat-body1 clearfix "> <div class="col-sm-4"><p class="text-info text-center"><b>' +
               data[x].name +
-              '</b></p></div><div class="col-sm-4"><button class="btn btn-success" id="approve' +
+              '</b></p></div><div class="col-sm-4"><button class="btn my-2 my-sm-0 mr-2 btn-success" id="approve' +
               x +
               '" value="' +
               data[x].name +
-              '" >Approve</button></div><div class="col-sm-4"><button class="btn btn-danger" id="disapprove' +
+              '" >Approve</button></div><div class="col-sm-4"><button class="btn my-2 my-sm-0 mr-2 btn-danger" id="disapprove' +
               x +
               '" value="' +
               data[x].name +
@@ -536,7 +530,7 @@
     // Delete
     $delete.click(function () {
       socket.emit("dlt");
-      location.reload();
+      createAlert('','','Chat Deleted Successfully.','success',false,true,'pageMessages');
     });
 
     // Download

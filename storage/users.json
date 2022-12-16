@@ -8,6 +8,7 @@
     "username": "client",
     "name": "client",
     "password": "$2a$10$gC2OtYeVgOcfuIl8e/JVuOcPjGlkFpeg3rhczP0LrrrrfgoXCQvTW",
-    "date": "1670400270586"
+    "date": "1670400270586",
+    "sound": true
   }
 ]

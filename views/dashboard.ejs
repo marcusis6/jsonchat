@@ -1,179 +1,188 @@
-<script src="emoji-button.js"></script>
+<script src="../emoji-button.js"></script>
+<div id="pageMessages"></div>
 
-<div class="main_section">
+<nav class="navbar navbar-light sticky-top bg-light flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand bg-light col-md-3 col-lg-2 mr-0 px-3" href="/admin"
+    >Admin Panel</a
+  >
   <i
-    id="minimize-sidebar-chat-head"
-    style="
-      float: left;
-      margin: -7px -6px 1px 16px;
-      position: fixed;
-      top: 8%;
-      right: 58%;
-      z-index: 1;
-    "
-    class="fa fa-angle-double-up"
     aria-hidden="true"
+    class="fa fa-angle-double-up hide-header my-2 my-sm-0 mr-2 ml-2"
   ></i>
+  <button
+    class="navbar-toggler position-absolute d-md-none collapsed"
+    type="button"
+    data-toggle="collapse"
+    data-target="#sidebarMenu"
+    aria-controls="sidebarMenu"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-  <i
-    id="minimize-sidebar"
-    style="position: fixed; top: 47%; right: 18%; font-size: 17px; z-index: 10"
-    aria-hidden="true"
-    class="fa fa-angle-double-right"
-  ></i>
+  <ul class="navbar-nav px-3 noticeSection">
+    <li id="noticeBoard" class="nav-item text-nowrap"></li>
+  </ul>
+  <form class="form-inline my-2 my-lg-0">
+    <i
+      aria-hidden="true"
+      class="fa fa-volume-up my-2 my-sm-0 mr-2 ml-2 sound-control"
+    ></i>
+    <a
+      class="btn btn-outline-success my-2 my-sm-0 mr-2"
+      type="a"
+      href="/password"
+    >
+      C Pass
+    </a>
+    <button
+      class="logout btn btn-outline-success my-2 my-sm-0 mr-2"
+      type="button"
+    >
+      Logout
+    </button>
+  </form>
+</nav>
 
-  <div class="container-fluid mt-4 mr-4">
-    <div class="chat_container">
-      <div
-        id="date"
-        class="fixed-top"
-        style="margin-top: 0px; margin-left: 15px; width: 97%"
-      ></div>
-
-      <div
-        id="noticeBoard"
-        class="fixed-top"
-        style="margin-left: 15px; width: 97%"
-      ></div>
-
-      <!--message_section-->
-      <div class="col-sm-9 message_section">
-        <!--new_message_head-->
-        <div class="row" style="width: 79vw; margin-left: 0px">
-          <div id="chat_header" class="new_message_head" style="height: 10px">
-            <div class="col-lg ml-2" style="margin-top: -11px">
-              <h6>
-                <a href="/admin">এডমিন<i class="fas fa-user"></i></a>
-              </h6>
-            </div>
-            <div id="pwd" class="col-lg">
-              <h6>
-                <a
-                  style="float: right; margin-right: 10px; margin-top: -25px"
-                  href="/password"
-                  >পাসওয়ার্ড পাল্টান<i class="fas fa-key"></i
-                ></a>
-              </h6>
-            </div>
-          </div>
-        </div>
-        <!--new_message_head-->
-
-        <!--chat_area-->
-        <div id="chat1" class="chat_area" style="overflow: auto; height: 80%">
+<div class="container-fluid">
+  <div class="row">
+    <main
+      role="main"
+      class="col-md-9 mr-sm-auto col-lg-10 px-md-4 main-section"
+    >
+      <i aria-hidden="true" class="fa fa-angle-double-down show-header"></i>
+      <div class="d-flex flex-column h-100 justify-content-between bg-light">
+        <div id="chat1" class="p-2 message-box">
+          <h2 style="display: none" id="usr"><%=name %></h2>
           <a href="javascript:" id="jump-to-last"
             ><i class="icon-chevron-up">&#9660;</i></a
           >
-
           <div id="loadmore" style="text-align: center">
             <a href="javascript:">আরো দেখব</a>
           </div>
-
           <ul id="chat" class="list-unstyled"></ul>
         </div>
-        <!--chat_area-->
 
-        <!--message_write-->
-        <div
-          id="messageForm"
-          class="message_write fixed-bottom"
-          style="position: relative"
-        >
-          <div><% include ./partials/messages %></div>
-          <button
-            id="emoji-button"
-            class="emoji-picker__emoji"
-            tabindex="0"
-            title="grinning face"
+        <div class="p-2">
+          <!--message_write-->
+          <div
+            id="messageForm"
+            class="message_write fixed-bottom"
+            style="position: relative"
           >
-            😀
-          </button>
-          <div id="messageBox">
-            <textarea
-              data-expandable
-              style="height: 45px; max-height: 38vh; resize: none"
-              id="message"
-              class="form-control"
-              placeholder="এখানে লিখুন..."
-              autofocus
-            ></textarea>
+            <div><% include ./partials/messages %></div>
+            <button
+              id="emoji-button"
+              class="emoji-picker__emoji"
+              tabindex="0"
+              title="grinning face"
+            >
+              😀
+            </button>
+            <div id="messageBox">
+              <textarea
+                data-expandable
+                style="height: 45px; max-height: 38vh; resize: none"
+                id="message"
+                class="form-control"
+                placeholder="এখানে লিখুন..."
+                autofocus
+              ></textarea>
+            </div>
+            <div class="clearfix"></div>
+            <!--	<div class="chat_bottom "><a href="# " class="pull-left upload_btn "><i class="fa fa-cloud-upload " aria-hidden="true "></i>
+                   Add Files</a>
+                   <a href="# " class="pull-right btn btn-success ">
+                   Send</a>
+                </div>-->
           </div>
-          <div class="clearfix"></div>
-          <!--	<div class="chat_bottom "><a href="# " class="pull-left upload_btn "><i class="fa fa-cloud-upload " aria-hidden="true "></i>
-                      Add Files</a>
-                      <a href="# " class="pull-right btn btn-success ">
-                      Send</a>
-                   </div>-->
+          <!--message_write-->
         </div>
-        <!--message_write-->
-        <!--<div style="height: 157vh;"> </div>-->
       </div>
-
-      <!--message_section-->
-
-      <!--chat_sidebar-->
-      <div
-        class="col-sm-3 chat_sidebar float-right"
-        style="margin-left: 79%; position: fixed; height: 97vh"
+    </main>
+    <div class="toggle">
+      <a id="sidebar-toggle" href="#" class="burger active">
+        <span></span>
+      </a>
+    </div>
+    <div id="sidebar_wrapper">
+      <nav
+        id="sidebarMenu"
+        class="col-md-3 col-lg-2 bg-light sidebar collapse d-md-block"
       >
-        <div class="row" style="height: 100%">
-          <button
-            id="button"
-            type="button"
-            class="btn btn-danger"
-            style="position: fixed; top: 4%; right: 3%"
-          >
-            লগ আউট
-          </button>
-
-          <div class="new_message_head" id="time" style="height: 10px"></div>
-
-          <div class="member_list" style="width: 100%; overflow: auto">
-            <ul id="users" class="list-unstyled"></ul>
+        <div class="sidebar-sticky pt-3">
+          <div class="text-center">
+            <button
+              type="button"
+              class="btn btn-outline-warning my-2 my-sm-0 mr-2"
+              style="
+                background-color: #ffc107;
+                color: #212529;
+                border-color: #ffc107;
+              "
+            >
+              Online
+            </button>
           </div>
-          <div class="new_message_head"></div>
+          <ul id="users" class="nav flex-column mt-3"></ul>
         </div>
-      </div>
-      <!--chat_sidebar-->
-      <h2 style="display: none" id="usr"><%=name %></h2>
+      </nav>
     </div>
   </div>
 </div>
 
 <script>
-  $("#minimize-sidebar").on("click", function () {
-    console.log("clicked");
-    if ($("#minimize-sidebar").hasClass("fa-angle-double-right")) {
-      $(".message_section").toggleClass("col-sm-9");
-      $(".chat_sidebar").hide(10);
-      $("#minimize-sidebar").removeClass("fa-angle-double-right");
-      $("#minimize-sidebar").addClass("fa-angle-double-left");
+  $("#sidebar-toggle").on("click", function () {
+    $(this).toggleClass("active");
+    if (!$(this).hasClass("active")) {
+      $("#sidebar_wrapper").hide("slow"); // hide sidebar
+      $(".main-section").removeClass("col-md-9 col-lg-10"); // remove smaller div class
+      $(".main-section").addClass("col-md-12 col-lg-12"); // add larger div class
       return;
     }
 
-    if ($("#minimize-sidebar").hasClass("fa-angle-double-left")) {
-      $(".message_section").toggleClass("col-sm-9");
-      $(".chat_sidebar").show(10);
-      $("#minimize-sidebar").removeClass("fa-angle-double-left");
-      $("#minimize-sidebar").addClass("fa-angle-double-right");
+    if ($(this).hasClass("active")) {
+      $("#sidebar_wrapper").show("slow"); // show sidebar
+      $(".main-section").removeClass("col-md-12 col-lg-12"); // remove larger div class
+      $(".main-section").addClass("col-md-9 col-lg-10"); // add smaller div class
       return;
     }
   });
+  $(".hide-header").on("click", function () {
+    $(".navbar").slideUp();
+    const $elem = $(".main-section");
+    $elem[0].style.setProperty("padding", "0px", "important");
+    $elem[0].style.setProperty("top", "0px");
+  });
 
-  $("#minimize-sidebar-chat-head").on("click", function () {
-    if ($("#minimize-sidebar-chat-head").hasClass("fa-angle-double-up")) {
-      $("#chat1").css("height", "87%");
-      $("#chat_header").hide(10);
-      $("#minimize-sidebar-chat-head").removeClass("fa-angle-double-up");
-      $("#minimize-sidebar-chat-head").addClass("fa-angle-double-down");
+  $(".show-header").on("click", function () {
+    $(".navbar").slideDown();
+    const $elem = $(".main-section");
+    $elem[0].style.setProperty("padding", "48px 24px 0px", "important");
+    $elem[0].style.removeProperty("top");
+  });
+
+  $("#minimize-sidebar").on("click", function () {
+    if ($("#minimize-sidebar").hasClass("fa-angle-double-right")) {
+      $("#sidebar_wrapper").hide(); // hide sidebar
+      $(".main-section").removeClass("col-md-9 col-lg-10"); // remove smaller div class
+      $(".main-section").addClass("col-md-12 col-lg-12"); // add larger div class
+
+      $("#minimize-sidebar").removeClass(
+        "right-arrow fa fa-angle-double-right"
+      ); // remove right icon
+      $("#minimize-sidebar").addClass("left-arrow fa fa-angle-double-left"); // add users icon
       return;
     }
 
-    if ($("#minimize-sidebar-chat-head").hasClass("fa-angle-double-down")) {
-      $("#chat1").css("height", "80%");
-      $("#chat_header").show(10);
-      $("#minimize-sidebar-chat-head").addClass("fa-angle-double-up");
-      $("#minimize-sidebar-chat-head").removeClass("fa-angle-double-down");
+    if ($("#minimize-sidebar").hasClass("fa fa-angle-double-left")) {
+      $("#sidebar_wrapper").show(); // show sidebar
+      $(".main-section").removeClass("col-md-12 col-lg-12"); // remove larger div class
+      $(".main-section").addClass("col-md-9 col-lg-10"); // add smaller div class
+
+      $("#minimize-sidebar").removeClass("left-arrow fa fa-angle-double-left"); // remove users icon
+      $("#minimize-sidebar").addClass("right-arrow fa fa-angle-double-right"); // add right icon
       return;
     }
   });
@@ -182,7 +191,7 @@
   $("body").on("keydown input", "textarea[data-expandable]", function () {
     //Auto-expanding textarea
     this.style.removeProperty("height");
-    this.style.height = this.scrollHeight + 2 + "px";
+    this.style.height = this.scrollHeight + 1 + "px";
 
     /*   var heightString = $('#chat1').css("height");
   var height = parseFloat(heightString) - 24;
@@ -193,7 +202,7 @@
 <script>
   const button = document.querySelector("#emoji-button");
 
-  const picker = new EmojiButton();
+  const picker = new EmojiButton({ zIndex: 100000 });
   picker.on("emoji", (emoji) => {
     document.querySelector("textarea#message").value += emoji;
   });
@@ -217,8 +226,14 @@
     var counter = 0;
     var history = [];
     var index = -1;
+    var sound = true;
+    var disconnected = new Audio("/disconnected.wav");
+    var connected = new Audio("/connected.wav");
+    var notification = new Audio("/notification.wav");
+
     socket.emit("load chat"); // chat should be enable or disable ?
     socket.emit("get notice"); // get notice
+    socket.emit("get sound", { name: $user }); // get sound preference
 
     // by default chat is disabled
     $message.attr("placeholder", "চ্যাট বন্ধ আছে").val("").focus().blur();
@@ -293,12 +308,62 @@
 
     // Notice Updated
     socket.on("notice updated", function (data) {
-      $notice.children().remove();
-      $notice.append(
-        '<marquee id="notice" behavior="scroll" direction="left" style="height: 25px; background-color: lightblue;">নোটিসঃ ' +
-          data +
-          "</marquee>"
-      );
+      if (data) {
+        $notice.children().remove();
+        $notice.append(
+          '<marquee id="notice" behavior="scroll" direction="left" style="height: 25px; color: #28a745;">নোটিসঃ ' +
+            data +
+            "</marquee>"
+        );
+      } else {
+        $notice.children().remove();
+        $notice.append(
+          '<a class="nav-link" href="#" style="color: #28a745">بسم الله الرحمن الرحيم</a>'
+        );
+      }
+    });
+
+    // sound preference
+    $(".sound-control").on("click", function () {
+      if ($(this).hasClass("fa-volume-up")) {
+        socket.emit("sound", { name: $user, sound: false });
+        return;
+      }
+      if ($(this).hasClass("fa-volume-off")) {
+        socket.emit("sound", { name: $user, sound: true });
+        return;
+      }
+    });
+
+    // Sound Updated
+    socket.on("sound updated", function (data) {
+      if (data) {
+        sound = true;
+        createAlert(
+          "",
+          "",
+          "Sound is ON",
+          "success",
+          false,
+          true,
+          "pageMessages"
+        );
+        $(".sound-control").removeClass("fa fa-volume-off ");
+        $(".sound-control").addClass("fa fa-volume-up ");
+      } else {
+        sound = false;
+        createAlert(
+          "",
+          "",
+          "Sound is OFF",
+          "danger",
+          false,
+          true,
+          "pageMessages"
+        );
+        $(".sound-control").removeClass("fa fa-volume-up");
+        $(".sound-control").addClass("fa fa-volume-off");
+      }
     });
 
     // Date Updated
@@ -328,8 +393,9 @@
           $(this).fadeOut("normal", function () {
             $(this).remove();
           });
-          var audio = new Audio("/disconnected.wav");
-          audio.play();
+          if (sound) {
+            disconnected.play();
+          }
         } else {
           $(this).removeClass("act");
         }
@@ -337,7 +403,7 @@
     });
 
     // Logout
-    $("#button").click(function () {
+    $(".logout").click(function () {
       socket.emit("lg", $user);
       window.location.href = "/users/logout";
     });
@@ -349,8 +415,9 @@
           $(this).fadeOut("normal", function () {
             $(this).remove();
           });
-          var audio = new Audio("/disconnected.wav");
-          audio.play();
+          if (sound) {
+            disconnected.play();
+          }
         }
       });
     });
@@ -374,9 +441,9 @@
               "</i></div></li>"
           )
           .fadeIn(2000);
-
-        var audio = new Audio("/connected.wav");
-        audio.play();
+        if (sound) {
+          connected.play();
+        }
       }
     });
 
@@ -464,8 +531,7 @@
           data._id +
           '" href="javascript:"><i class="fas fa-trash"></i></a>';
       } else {
-        var audio = new Audio("/notification.wav");
-        audio.play();
+        if (sound) notification.play();
       }
 
       $("ul#chat > li.pending").remove();
@@ -504,6 +570,7 @@
       if (document.hidden) {
         unread++;
         document.title = "al-kamr(" + unread + ")";
+        if (sound) notification.play();
       } else {
         unread = 0;
       }

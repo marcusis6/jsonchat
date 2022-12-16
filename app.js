@@ -276,17 +276,46 @@ io.sockets.on("connection", function (socket) {
 
   // Save Notice
   socket.on("notice", function (data) {
-    if (data) {
-      let chat = getAll("./storage/chat.json");
-      chat.forEach((item) => {
-        if (item.key === "chat") {
+    let chat = getAll("./storage/chat.json");
+    chat.forEach((item) => {
+      if (item.key === "chat") {
+        if (data) {
           item.notice = encrypt(data);
-          Update("./storage/chat.json", chat);
+        } else {
+          item.notice = data;
+        }
+        Update("./storage/chat.json", chat);
+      }
+    });
+    // Send notice change event
+    io.sockets.emit("notice updated", data);
+  });
+
+  // Save sound preference
+  socket.on("sound", function (data) {
+    let users = getAll("./storage/users.json");
+    users.forEach((item) => {
+      if (item.username == data.name) {
+        item.sound = data.sound;
+        Update("./storage/users.json", users);
+
+        // Send sound preference event
+        socket.emit("sound updated", item.sound);
+      }
+    });
+  });
+
+  // Get Sound
+  socket.on("get sound", function (data) {
+    if (data.name) {
+      let users = getAll("./storage/users.json");
+      users.forEach((item) => {
+        if (item.username == data.name) {
+          // Send sound preference event
+          socket.emit("sound updated", item.sound);
         }
       });
     }
-    // Send notice change event
-    io.sockets.emit("notice updated", data);
   });
 
   // Get Notice

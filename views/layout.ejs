@@ -18,334 +18,494 @@
     <script src="../moment.js"></script>
     <script src="../moment-timezone-with-data-2012-2022.min.js"></script>
     <script src="../bn.js"></script>
+    <script>
+      function createAlert(
+        title,
+        summary,
+        details,
+        severity,
+        dismissible,
+        autoDismiss,
+        appendToId
+      ) {
+        var iconMap = {
+          info: "fa fa-info-circle",
+          success: "fa fa-thumbs-up",
+          warning: "fa fa-exclamation-triangle",
+          danger: "fa ffa fa-exclamation-circle",
+        };
 
-    <style type="text/css">
-      #custom-search-input {
-        background: #e8e6e7 none repeat scroll 0 0;
-        margin: 0;
-        padding: 10px;
-      }
+        var iconAdded = false;
 
-      #custom-search-input .search-query {
-        background: #fff none repeat scroll 0 0 !important;
-        border-radius: 4px;
-        height: 33px;
-        margin-bottom: 0;
-        padding-left: 7px;
-        padding-right: 7px;
-      }
+        var alertClasses = ["alert", "animated", "flipInX"];
+        alertClasses.push("alert-" + severity.toLowerCase());
 
-      #custom-search-input button {
-        background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-        border: 0 none;
-        border-radius: 3px;
-        color: #666666;
-        left: auto;
-        margin-bottom: 0;
-        margin-top: 7px;
-        padding: 2px 5px;
-        position: absolute;
-        right: 0;
-        z-index: 9999;
-      }
+        if (dismissible) {
+          alertClasses.push("alert-dismissible");
+        }
 
-      .search-query:focus + button {
-        z-index: 3;
-      }
+        var msgIcon = $("<i />", {
+          class: iconMap[severity], // you need to quote "class" since it's a reserved keyword
+        });
 
-      .all_conversation button {
-        background: #f5f3f3 none repeat scroll 0 0;
-        border: 1px solid #dddddd;
-        height: 38px;
-        text-align: left;
-        width: 100%;
-      }
+        var msg = $("<div />", {
+          class: alertClasses.join(" "), // you need to quote "class" since it's a reserved keyword
+        });
 
-      .all_conversation i {
-        background: #e9e7e8 none repeat scroll 0 0;
-        border-radius: 100px;
-        color: #636363;
-        font-size: 17px;
-        height: 30px;
-        line-height: 30px;
-        text-align: center;
-        width: 30px;
-      }
+        if (title) {
+          var msgTitle = $("<h4 />", {
+            html: title,
+          }).appendTo(msg);
 
-      .all_conversation .caret {
-        bottom: 0;
-        margin: auto;
-        position: absolute;
-        right: 15px;
-        top: 0;
-      }
+          if (!iconAdded) {
+            msgTitle.prepend(msgIcon);
+            iconAdded = true;
+          }
+        }
 
-      .all_conversation .dropdown-menu {
-        background: #f5f3f3 none repeat scroll 0 0;
-        border-radius: 0;
-        margin-top: 0;
-        padding: 0;
-        width: 100%;
-      }
+        if (summary) {
+          var msgSummary = $("<strong />", {
+            html: summary,
+          }).appendTo(msg);
 
-      .all_conversation ul li {
-        border-bottom: 1px solid #dddddd;
-        line-height: normal;
-        width: 100%;
-      }
+          if (!iconAdded) {
+            msgSummary.prepend(msgIcon);
+            iconAdded = true;
+          }
+        }
 
-      .all_conversation ul li a:hover {
-        background: #dddddd none repeat scroll 0 0;
-        color: #333;
-      }
+        if (details) {
+          var msgDetails = $("<p />", {
+            html: details,
+          }).appendTo(msg);
 
-      .all_conversation ul li a {
-        color: #333;
-        line-height: 30px;
-        padding: 3px 20px;
-      }
+          if (!iconAdded) {
+            msgDetails.prepend(msgIcon);
+            iconAdded = true;
+          }
+        }
 
-      .member_list .chat-body {
-        text-align: center;
-        margin-top: 0;
-      }
+        if (dismissible) {
+          var msgClose = $("<span />", {
+            class: "close", // you need to quote "class" since it's a reserved keyword
+            "data-dismiss": "alert",
+            html: "<i class='fa fa-times-circle'></i>",
+          }).appendTo(msg);
+        }
 
-      .top_nav {
-        overflow: visible;
-      }
+        $("#" + appendToId).prepend(msg);
 
-      .member_list .contact_sec {
-        margin-top: 3px;
+        if (autoDismiss) {
+          setTimeout(function () {
+            msg.addClass("flipOutX");
+            setTimeout(function () {
+              msg.remove();
+            }, 1000);
+          }, 5000);
+        }
       }
-
-      .member_list li {
-        padding: 6px;
-      }
-
-      .member_list ul {
-        border: 1px solid #dddddd;
-      }
-
-      .chat-img img {
-        height: 34px;
-        width: 34px;
-      }
-
-      .member_list li {
-        border-bottom: 1px solid #dddddd;
-        padding: 6px;
-      }
-
-      .member_list li:last-child {
-        border-bottom: none;
-      }
-
-      .member_list {
-        height: 643px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        width: 100%;
-      }
-
-      .sub_menu_ {
-        background: #e8e6e7 none repeat scroll 0 0;
-        left: 100%;
-        max-width: 233px;
-        position: absolute;
-        width: 100%;
-      }
-
-      .sub_menu_ {
-        background: #f5f3f3 none repeat scroll 0 0;
-        border: 1px solid rgba(0, 0, 0, 0.15);
-        display: none;
-        left: 100%;
-        margin-left: 0;
-        max-width: 233px;
-        position: absolute;
-        top: 0;
-        width: 100%;
-      }
-
-      .all_conversation ul li:hover .sub_menu_ {
-        display: block;
-      }
-
-      .new_message_head {
-        background: #f5f3f3 none repeat scroll 0 0;
-        font-size: 13px;
-        font-weight: 600;
-        padding: 30px 10px;
-        width: 100%;
-      }
-
-      .message_section {
-        height: 97vh;
-        border: 1px solid #dddddd;
-        overflow: scroll;
-        overflow-x: hidden;
-      }
-
-      .chat_area {
-        float: left;
-        height: 604px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        width: 100%;
-      }
-
-      .chat_area li {
-        padding: 14px 14px 0;
-      }
-
-      .chat_area li .chat-img1 img {
-        height: 40px;
-        width: 40px;
-      }
-
-      .chat-body1 p {
-        background: #fbf9fa none repeat scroll 0 0;
-        padding: 6px;
-      }
-
-      .chat_area .admin_chat .chat-body1 {
-        margin-left: 0;
-        margin-right: 50px;
-      }
-
-      .chat_area li:last-child {
-        padding-bottom: 10px;
-      }
-
-      .message_write {
-        background: #f5f3f3 none repeat scroll 0 0;
-        float: left;
-        padding: 15px;
-        width: 100%;
-        bottom: 0%;
-      }
-
-      .message_write textarea.form-control {
-        height: 70px;
-        padding: 10px;
-      }
-
-      .chat_bottom {
-        float: left;
-        margin-top: 13px;
-        width: 100%;
-      }
-
-      .upload_btn {
-        color: #777777;
-      }
-
-      .sub_menu_ > li a,
-      .sub_menu_ > li {
-        float: left;
-        width: 100%;
-      }
-
-      .member_list li:hover {
-        background: #428bca none repeat scroll 0 0;
-        color: #fff;
-        cursor: pointer;
-      }
-
-      .col-sm-9 {
-        max-width: 80%;
-        float: left;
-        padding: 1px;
-      }
-
-      .col-sm-3 {
-        max-width: 18%;
-        border: 1px solid #dddddd;
-      }
-
-      .dropup,
-      .dropright,
-      .dropdown,
-      .dropleft {
-        position: relative;
-        width: 100%;
-      }
-
-      .text-muted {
-        float: right;
-      }
-
-      .header_sec {
-        text-align: center;
-      }
-
-      #jump-to-last {
-        position: absolute;
-        bottom: 210px;
-        right: 90px;
-        background: #000;
-        background: rgba(0, 0, 0, 0.7);
-        width: 50px;
-        height: 50px;
-        display: block;
-        text-decoration: none;
-        -webkit-border-radius: 35px;
-        -moz-border-radius: 35px;
-        border-radius: 35px;
-        display: none;
-        -webkit-transition: all 0.3s linear;
-        -moz-transition: all 0.3s ease;
-        -ms-transition: all 0.3s ease;
-        -o-transition: all 0.3s ease;
-        transition: all 0.3s ease;
-      }
-
-      #jump-to-last i {
-        color: #fff;
-        margin: 0;
-        position: relative;
-        left: 16px;
-        top: 13px;
-        font-size: 19px;
-        -webkit-transition: all 0.3s ease;
-        -moz-transition: all 0.3s ease;
-        -ms-transition: all 0.3s ease;
-        -o-transition: all 0.3s ease;
-        transition: all 0.3s ease;
-      }
-
-      #jump-to-last:hover {
-        background: rgba(0, 0, 0, 0.9);
-      }
-
-      #jump-to-last:hover i {
-        color: #fff;
-        top: 5px;
-      }
-
-      ul#chat li.pending {
-        color: #aaa;
-      }
-
-      a#loadmore {
-        position: absolute;
-        display: block;
-        display: none;
-      }
-
-      a:hover {
-        text-decoration: none;
-      }
-
-      #dwn {
-        position: absolute;
-        display: block;
-        margin: 22px -138px;
-      }
-    </style>
+    </script>
   </head>
 
   <body>
     <%- body %>
   </body>
+
+  <style>
+    body {
+      font-size: 1.2rem;
+    }
+
+    .feather {
+      width: 16px;
+      height: 16px;
+      vertical-align: text-bottom;
+    }
+
+    .message-box {
+      overflow-y: auto;
+    }
+
+    /*
+* Sidebar
+*/
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 100; /* Behind the navbar */
+      padding: 48px 0 0; /* Height of navbar */
+      box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .main-section {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100; /* Behind the navbar */
+      padding: 48px 0 0; /* Height of navbar */
+      box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 767.98px) {
+      .sidebar {
+        top: 3rem;
+      }
+      .main-section {
+        top: 3rem;
+      }
+      .burger {
+        display: none;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .sidebar {
+        top: 4rem;
+      }
+      .main-section {
+        top: 4rem;
+      }
+    }
+
+    @media (max-width: 428px) {
+      .sidebar {
+        top: 7rem;
+      }
+      .main-section {
+        top: 7rem;
+      }
+    }
+
+    @media (max-width: 418px) {
+      .sidebar {
+        top: 6.5rem;
+      }
+      .main-section {
+        top: 6.5rem;
+      }
+      .noticeSection {
+        max-width: 100% !important;
+      }
+    }
+
+    @media (max-width: 247px) {
+      .sidebar {
+        top: 10rem;
+      }
+      .main-section {
+        top: 10rem;
+      }
+    }
+
+    .sidebar-sticky {
+      position: relative;
+      top: 0;
+      height: calc(100vh - 48px);
+      padding-top: 0.5rem;
+      overflow-x: hidden;
+      overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    }
+
+    @supports ((position: -webkit-sticky) or (position: sticky)) {
+      .sidebar-sticky {
+        position: -webkit-sticky;
+        position: sticky;
+      }
+    }
+
+    .sidebar .nav-link {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .sidebar .nav-link .feather {
+      margin-right: 4px;
+      color: #999;
+    }
+
+    .sidebar .nav-link.active {
+      color: #007bff;
+    }
+
+    .sidebar .nav-link:hover .feather,
+    .sidebar .nav-link.active .feather {
+      color: inherit;
+    }
+
+    .sidebar-heading {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    /*
+* Navbar
+*/
+
+    .navbar-brand {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      font-size: 1rem;
+      background-color: rgba(0, 0, 0, 0.25);
+      box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .navbar .navbar-toggler {
+      top: 0.25rem;
+      right: 1rem;
+    }
+
+    .navbar .form-control {
+      padding: 0.75rem 1rem;
+      border-width: 0;
+      border-radius: 0;
+    }
+
+    .chat-body1 p {
+      background: #fbf9fa none repeat scroll 0 0;
+      padding: 6px;
+      word-break: break-all;
+    }
+
+    #jump-to-last {
+      position: absolute;
+      bottom: 210px;
+      right: 90px;
+      background: #000;
+      background: rgba(0, 0, 0, 0.7);
+      width: 50px;
+      height: 50px;
+      display: block;
+      text-decoration: none;
+      -webkit-border-radius: 35px;
+      -moz-border-radius: 35px;
+      border-radius: 35px;
+      display: none;
+      -webkit-transition: all 0.3s linear;
+      -moz-transition: all 0.3s ease;
+      -ms-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all 0.3s ease;
+    }
+
+    #jump-to-last i {
+      color: #fff;
+      margin: 0;
+      position: relative;
+      left: 16px;
+      top: 13px;
+      font-size: 19px;
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -ms-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all 0.3s ease;
+    }
+
+    #jump-to-last:hover {
+      background: rgba(0, 0, 0, 0.9);
+    }
+
+    #jump-to-last:hover i {
+      color: #fff;
+      top: 5px;
+    }
+
+    ul#chat li.pending {
+      color: #aaa;
+    }
+
+    a#loadmore {
+      position: absolute;
+      display: block;
+      display: none;
+    }
+
+    a:hover {
+      text-decoration: none;
+    }
+
+    .text-muted {
+      float: right;
+    }
+
+    .wrapper {
+      z-index: 100;
+    }
+
+    .header_sec {
+      text-align: center;
+    }
+
+    .hide-header {
+      position: absolute;
+      bottom: -30%;
+      left: 20%;
+      font-size: 23px;
+      color: #28a745;
+      z-index: 10000;
+      padding: 9px;
+    }
+
+    .show-header {
+      position: absolute;
+      top: 2.5%;
+      right: 28%;
+      font-size: 23px;
+      color: #28a745;
+      z-index: 10000;
+    }
+
+    .left-arrow {
+      position: absolute;
+      top: 9%;
+      left: 98%;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      font-size: 23px;
+      color: #28a745;
+      z-index: 10000;
+    }
+
+    /* sidebar hider icon related css */
+    #sidebar-toggle {
+      width: 28px;
+      height: 32px;
+      cursor: pointer;
+      position: fixed;
+      z-index: 100000;
+      float: right;
+      right: 1%;
+      top: 7.5%;
+    }
+
+    .burger:before,
+    .burger span,
+    .burger:after {
+      width: 100%;
+      height: 2px;
+      display: block;
+      background: #000;
+      border-radius: 2px;
+      position: absolute;
+      opacity: 1;
+    }
+
+    .burger:before,
+    .burger:after {
+      -webkit-transition: top 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        background-color 1.15s cubic-bezier(0.86, 0, 0.07, 1),
+        -webkit-transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+      transition: top 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        background-color 1.15s cubic-bezier(0.86, 0, 0.07, 1),
+        -webkit-transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+      -o-transition: top 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        background-color 1.15s cubic-bezier(0.86, 0, 0.07, 1);
+      transition: top 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        background-color 1.15s cubic-bezier(0.86, 0, 0.07, 1);
+      transition: top 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        background-color 1.15s cubic-bezier(0.86, 0, 0.07, 1),
+        -webkit-transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+      -webkit-transition: top 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        -webkit-transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+        background-color 1.15s cubic-bezier(0.86, 0, 0.07, 1);
+      content: "";
+    }
+
+    .burger:before {
+      top: 4px;
+    }
+
+    .burger span {
+      top: 15px;
+    }
+
+    .burger:after {
+      top: 26px;
+    }
+
+    /* Hover */
+    .burger:hover:before {
+      top: 7px;
+    }
+
+    .burger:hover:after {
+      top: 23px;
+    }
+
+    /* Click */
+    .burger.active span {
+      opacity: 0;
+    }
+
+    .burger.active:before,
+    .burger.active:after {
+      top: 40%;
+    }
+
+    .burger.active:before {
+      -webkit-transform: rotate(45deg);
+      -moz-transform: rotate(45deg);
+      filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=5);
+      /*for IE*/
+    }
+
+    .burger.active:after {
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=-5);
+      /*for IE*/
+    }
+
+    .burger:focus {
+      outline: none;
+    }
+
+    .noticeSection {
+      max-width: 42%;
+    }
+
+    /* alert related css  */
+    #pageMessages {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      width: 30%;
+      z-index: 20000;
+    }
+
+    .alert {
+      position: relative;
+    }
+
+    .alert .close {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 1em;
+    }
+
+    .alert .fa {
+      margin-right: 0.3em;
+    }
+
+    /* sound-control related  */
+    .sound-control {
+      font-size: 23px;
+      color: #28a745;
+    }
+  </style>
 </html>
