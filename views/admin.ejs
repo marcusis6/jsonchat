@@ -55,6 +55,9 @@
               <button id="dw" type="button" class="btn btn-secondary m-2">
                 Download Chat
               </button>
+              <button id="download-users" type="button" class="btn btn-secondary m-2">
+                Download Users Json
+              </button>
               <button id="dlt" type="button" class="btn btn-danger m-2">
                 Delete Chat
               </button>
@@ -539,6 +542,12 @@
       window.open("/download", "_blank");
     });
 
+    // Download
+    $("#download-users").click(function () {
+      socket.emit("Download Users");
+      window.open("/download-users", "_blank");
+    });
+    
     $("#chatToggleSwitch").click(function () {
       if ($("#chatToggleSwitch").is(":checked") == true) {
         console.log("checked");

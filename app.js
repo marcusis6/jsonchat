@@ -380,6 +380,21 @@ io.sockets.on("connection", function (socket) {
     });
   });
 
+  // Download Users file
+  socket.on("Download Users", function () {
+    // console.log('ok');
+    let users = getAll("./storage/users.json");
+
+    // write to a new file named users.json
+    fs.writeFile("./routes/users.json", JSON.stringify(users), (err) => {
+      // throws an error, you could also catch it here
+      if (err) throw err;
+
+      // success case, the file was saved
+      // console.log('saved!');
+    });
+  });
+
   // Delete all chats
   socket.on("dlt", function () {
     // Need to delete notice as old encryption will not work
