@@ -300,7 +300,7 @@ io.sockets.on("connection", function (socket) {
         Update("./storage/users.json", users);
 
         // Send sound preference event
-        socket.emit("sound updated", item.sound);
+        // socket.emit("sound updated", item.sound);
       }
     });
   });

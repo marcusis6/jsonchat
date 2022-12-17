@@ -325,20 +325,10 @@
 
     // sound preference
     $(".sound-control").on("click", function () {
-      if ($(this).hasClass("fa-volume-up")) {
-        socket.emit("sound", { name: $user, sound: false });
-        return;
-      }
       if ($(this).hasClass("fa-volume-off")) {
-        socket.emit("sound", { name: $user, sound: true });
-        return;
-      }
-    });
-
-    // Sound Updated
-    socket.on("sound updated", function (data) {
-      if (data) {
         sound = true;
+        $(".sound-control").removeClass("fa fa-volume-off ");
+        $(".sound-control").addClass("fa fa-volume-up ");
         createAlert(
           "",
           "",
@@ -348,9 +338,10 @@
           true,
           "pageMessages"
         );
-        $(".sound-control").removeClass("fa fa-volume-off ");
-        $(".sound-control").addClass("fa fa-volume-up ");
-      } else {
+        socket.emit("sound", { name: $user, sound: false });
+        return;
+      }
+      if ($(this).hasClass("fa-volume-up")) {
         sound = false;
         createAlert(
           "",
@@ -363,8 +354,36 @@
         );
         $(".sound-control").removeClass("fa fa-volume-up");
         $(".sound-control").addClass("fa fa-volume-off");
+
+        socket.emit("sound", { name: $user, sound: true });
+        return;
       }
     });
+
+    // Sound Updated
+    // socket.on("sound updated", function (data) {
+    //   if (data) {
+    //     createAlert(
+    //       "",
+    //       "",
+    //       "Sound Preference Saved Successfully",
+    //       "success",
+    //       false,
+    //       true,
+    //       "pageMessages"
+    //     );
+    //   } else {
+    //     createAlert(
+    //       "",
+    //       "",
+    //       "Sound Preference Saved Successfully",
+    //       "success",
+    //       false,
+    //       true,
+    //       "pageMessages"
+    //     );
+    //   }
+    // });
 
     // Date Updated
     socket.on("date updated", function (data) {
