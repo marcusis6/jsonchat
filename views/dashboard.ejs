@@ -3,12 +3,8 @@
 
 <nav class="navbar navbar-light sticky-top bg-light flex-md-nowrap p-0 shadow">
   <a class="navbar-brand bg-light col-md-3 col-lg-2 mr-0 px-3" href="/admin"
-    >Admin Panel</a
+    >এডমিন প্যানেল</a
   >
-  <i
-    aria-hidden="true"
-    class="fa fa-angle-double-up hide-header my-2 my-sm-0 mr-2 ml-2"
-  ></i>
   <button
     class="navbar-toggler position-absolute d-md-none collapsed"
     type="button"
@@ -34,13 +30,13 @@
       type="a"
       href="/password"
     >
-      C Pass
+    চেঞ্জ পাসওয়ার্ড 
     </a>
     <button
       class="logout btn btn-outline-success my-2 my-sm-0 mr-2"
       type="button"
     >
-      Logout
+    লগ আউট
     </button>
   </form>
 </nav>
@@ -51,6 +47,10 @@
       role="main"
       class="col-md-9 mr-sm-auto col-lg-10 px-md-4 main-section"
     >
+    <i
+    aria-hidden="true"
+    class="fa fa-angle-double-up hide-header my-2 my-sm-0 mr-2 ml-2"
+  ></i>
       <i aria-hidden="true" class="fa fa-angle-double-down show-header"></i>
       <div class="d-flex flex-column h-100 justify-content-between bg-light">
         <div id="chat1" class="p-2 message-box">
@@ -121,7 +121,7 @@
                 border-color: #ffc107;
               "
             >
-              Online
+            অনলাইন 
             </button>
           </div>
           <ul id="users" class="nav flex-column mt-3"></ul>
@@ -151,8 +151,10 @@
   $(".hide-header").on("click", function () {
     $(".navbar").slideUp();
     const $elem = $(".main-section");
-    $elem[0].style.setProperty("padding", "0px", "important");
+    $elem[0].style.setProperty("padding", "0px 24px 0px", "important");
     $elem[0].style.setProperty("top", "0px");
+    $(this).hide();
+    $(".show-header").show();
   });
 
   $(".show-header").on("click", function () {
@@ -160,6 +162,8 @@
     const $elem = $(".main-section");
     $elem[0].style.setProperty("padding", "48px 24px 0px", "important");
     $elem[0].style.removeProperty("top");
+    $(this).hide();
+    $(".hide-header").show();
   });
 
   $("#minimize-sidebar").on("click", function () {
@@ -331,7 +335,7 @@
         createAlert(
           "",
           "",
-          "Sound is ON",
+          "সাউন্ড চালু হয়েছে",
           "success",
           false,
           true,
@@ -345,7 +349,7 @@
         createAlert(
           "",
           "",
-          "Sound is OFF",
+          "সাউন্ড বন্ধ হয়েছে",
           "danger",
           false,
           true,
@@ -532,7 +536,7 @@
 
     document.addEventListener("visibilitychange", function () {
       if (!document.hidden) {
-        document.title = "al-kamr";
+        document.title = "চ্যাট্রুম";
       }
     });
 
@@ -587,7 +591,7 @@
       }
       if (document.hidden) {
         unread++;
-        document.title = "al-kamr(" + unread + ")";
+        document.title = "চ্যাট্রুম(" + unread + ")";
         if (sound) notification.play();
       } else {
         unread = 0;

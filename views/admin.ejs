@@ -67,7 +67,7 @@
                   <textarea
                     id="notice-body"
                     class="form-control"
-                    placeholder="এখানে নোটিস লিখুন..."
+                    placeholder="type here..."
                     autofocus
                   ></textarea>
                 </div>
@@ -87,7 +87,7 @@
           </div>
           <div id="users1" class="member_list mt-4 container tab-pane fade" style="width: 100%">
             <div id="loadpending" style="text-align: center">
-              <a href="javascript:">আরো দেখব</a>
+              <a href="javascript:">see more</a>
             </div>
   
             <ul id="users" class="list-unstyled list-group"></ul>
@@ -96,7 +96,7 @@
           <!--chat_area-->
           <div id="chat1" class="chat_area container tab-pane active">
             <div id="loaduser" style="text-align: center">
-              <a href="javascript:">আরো দেখব</a>
+              <a href="javascript:">see more</a>
             </div>
 
             <ul id="chat" class="list-unstyled list-group"></ul>
@@ -233,7 +233,7 @@
     // New message append
     socket.on("new message", function (data) {
       unread++;
-      document.title = "al-kamr(" + unread + ")";
+      document.title = "চ্যাট্রুম(" + unread + ")";
     });
 
     // New user approved

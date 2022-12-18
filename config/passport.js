@@ -6,7 +6,6 @@ const { getAll, Append } = require("../crud");
 module.exports = function (passport) {
   passport.use(
     new LocalStrategy({ usernameField: "name" }, (name, password, done) => {
-      let username = name.toLowerCase();
 
       // Match User
       (async function () {

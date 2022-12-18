@@ -18,7 +18,6 @@ router.get("/register", (req, res) => res.render("register"));
 router.post("/register", (req, res) => {
   const { name, password, password2 } = req.body;
   let errors = [];
-  let username = name.toLowerCase();
 
   //Check required fields
   if (!name || !password || !password2) {
@@ -35,9 +34,9 @@ router.post("/register", (req, res) => {
     errors.push({ msg: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে" });
   }
 
-  if (!name.match(/^[0-9a-zA-Z]+$/)) {
-    errors.push({ msg: "নাম শুধুমাত্র আলফা নিউমেরিক হতে হবে" });
-  }
+  // if (!name.match(/^[0-9a-zA-Z]+$/)) {
+  //   errors.push({ msg: "নাম শুধুমাত্র আলফা নিউমেরিক হতে হবে" });
+  // }
 
   if (errors.length > 0) {
     res.render("register", {
@@ -68,7 +67,7 @@ router.post("/register", (req, res) => {
           });
         } else {
           let newUser = new User({
-            username: username,
+            username: name,
             name: name,
             password: password,
           });
