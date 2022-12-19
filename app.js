@@ -5,12 +5,7 @@ const flash = require("connect-flash");
 const session = require("express-session");
 const passport = require("passport");
 const fs = require("fs");
-const rp = require("request-promise");
-const cheerio = require("cheerio");
 const crypto = require("crypto");
-const hijriSafe = require("hijri-date/lib/safe");
-
-const HijriDate = hijriSafe.default;
 
 // Socket IO Config
 const app = express();
@@ -23,25 +18,9 @@ const { getAll, Append, Update } = require("./crud");
 const Message = require("./models/Message");
 const User = require("./models/User");
 const Chat = require("./models/Chat");
-const { resolve } = require("path");
-const { html } = require("cheerio");
 
 // Passport config
 require("./config/passport")(passport);
-
-// DB Config
-const db = require("./config/keys").MongoURI;
-
-// Connect to Mongo
-// mongoose
-//   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => console.log("MongoDB Connceted"))
-//   .catch(err => console.log(err));
-
-/*  mongoose
-  .connect("mongodb://localhost:27017/myapp", { useNewUrlParser: true })
-  .then(() => console.log("MongoDB Connceted"))
-  .catch(err => console.log(err));  */
 
 // EJS
 app.use(expressLayouts);
@@ -93,8 +72,6 @@ connections = [];
 let totalApproved = 0;
 let totalPending = 0;
 let chatOption = "undefined";
-let notice = "";
-let hijriDate = "";
 let firstLoad = true;
 
 const algorithm = "aes-256-cbc";
@@ -126,49 +103,14 @@ function decrypt(text) {
   }
 }
 
-// setInterval(function () {
-//   let currDate = hijriDate;
-//   //rp("https://timesprayer.com/en/hijri-date-in-bangladesh.html")
-//   rp("https://habibur.com")
-//     .then((html) => {
-//       //currDate = cheerio(".prayertable > table > tbody > tr:nth-child(1) > td:nth-child(2)", html).text();
-//       currDate =
-//         cheerio(
-//           ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(1)",
-//           html
-//         ).text() +
-//         " " +
-//         cheerio(
-//           ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(2) > a",
-//           html
-//         ).text() +
-//         " " +
-//         cheerio(
-//           ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(3) > a",
-//           html
-//         ).text();
-//       if (currDate !== hijriDate) {
-//         hijriDate = currDate;
-//         io.sockets.emit("date updated", chatOption);
-//       }
-//     })
-//     .catch((err) => console.log(err));
-//   //currDate = new HijriDate();
-// }, 300000);
-
 // Connection
 io.sockets.on("connection", function (socket) {
   connections.push(socket);
   updateUsernames(); // To update users list on startup
   // Get chats from mongo
 
+  // getting last 50 messages
   let output = getAll("./storage/messages.json").reverse().slice(0, 50);
-
-  // console.log(output);
-
-  /*var hw = encrypt("Some serious stuff");
-      console.log(hw);
-      console.log(decrypt(hw));*/
 
   let unrecognized = false;
   if (firstLoad) {
@@ -248,31 +190,6 @@ io.sockets.on("connection", function (socket) {
       })
       .catch((err) => console.log(err));
   });
-  //rp("https://timesprayer.com/en/hijri-date-in-bangladesh.html")
-  // rp("https://habibur.com")
-  //   .then((html) => {
-  //     //hijriDate = cheerio(".prayertable > table > tbody > tr:nth-child(1) > td:nth-child(2)", html).text();
-  //     hijriDate =
-  //       cheerio(
-  //         ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(1)",
-  //         html
-  //       ).text() +
-  //       " " +
-  //       cheerio(
-  //         ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(2) > a",
-  //         html
-  //       ).text() +
-  //       " " +
-  //       cheerio(
-  //         ".row-fluid > div > div > div > div:nth-child(2) > table > tbody > tr > td:nth-child(3) > a",
-  //         html
-  //       ).text();
-  //     socket.emit("l-chat", chatOption, notice, hijriDate);
-  //     socket.emit("l-toggle", chatOption);
-  //   })
-  //   .catch((err) => console.log(err));
-  //hijriDate = new HijriDate();
-  //});
 
   // Save Notice
   socket.on("notice", function (data) {
@@ -300,7 +217,7 @@ io.sockets.on("connection", function (socket) {
         Update("./storage/users.json", users);
 
         // Send sound preference event
-        // socket.emit("sound updated", item.sound);
+        socket.emit("sound updated", item.sound);
       }
     });
   });
@@ -599,86 +516,6 @@ io.sockets.on("connection", function (socket) {
     }
   });
 
-  // hajira
-  socket.on("hajira", function (data, callback) {
-    console.log("came");
-    ut = { username: data.user, time: data.time };
-    nope = true;
-    tmpNope = true;
-
-    for (var x = 0; x < users.length; x++) {
-      if (users[x].username === data.user) {
-        nope = false;
-      }
-    }
-
-    for (var x = 0; x < tmpUsers.length; x++) {
-      if (tmpUsers[x].username === data.user) {
-        tmpNope = false;
-      }
-    }
-
-    if (nope) {
-      users.push(ut);
-      if (tmpNope) {
-        tmpUsers.push(ut);
-      }
-    }
-  });
-  // User Disconnect
-  /*socket.on("disconnect", function() {
-    setTimeout(function() {
-      tmpUsers = users;
-      users = []; // remove all users from the array
-      // Emit for active users response
-      io.sockets.emit("response");
-      // console.log("response called");  
-    }, 3000);
-  });*/
-
-  // After 1 minute users will be refreshed
-  /*let urf = function() {
-    tmpUsers = users;
-    users = []; // remove all users from the array
-    // Emit for Active users response
-    io.sockets.emit("response");
-  };
-  setInterval(urf, 10000);*/
-
-  // Active users response
-  socket.on("actRes", (data) => {
-    ut = { username: data.user, time: data.time };
-    for (var x = 0; x < users.length; x++) {
-      if (users[x].username === data.user) {
-        ut = { username: data.user, time: users[x].time };
-      }
-    }
-
-    nope = true;
-    for (var x = 0; x < tmpUsers.length; x++) {
-      if (tmpUsers[x].username === data.user) {
-        nope = false;
-      }
-    }
-
-    if (nope) {
-      // Pussing active users to users array
-      tmpUsers.push(ut);
-    }
-
-    // Emit to mark Active users
-    //io.sockets.emit("actM", data.user);
-    // console.log("actM called");
-
-    /*let fxn = function() {
-      // Emit to remove InActive users after 3 sec
-      //io.sockets.emit("inAct");
-      users = tmpUsers;
-      io.sockets.emit("get users", users);
-    };
-    setTimeout(fxn, 30000);*/
-  });
-
   // Logout
   socket.on("lg", function (data) {
     // console.log('called');
@@ -730,10 +567,36 @@ io.sockets.on("connection", function (socket) {
     // Emit users list
     socket.emit("get users", users);
   }
+
+  // Hajira - Active users reponse after approx 17sec
+  socket.on("hajira", function (data, callback) {
+    ut = { username: data.user, time: data.time };
+    nope = true;
+    tmpNope = true;
+
+    for (var x = 0; x < users.length; x++) {
+      if (users[x].username === data.user) {
+        nope = false;
+      }
+    }
+
+    for (var x = 0; x < tmpUsers.length; x++) {
+      if (tmpUsers[x].username === data.user) {
+        tmpNope = false;
+      }
+    }
+
+    if (nope) {
+      users.push(ut);
+      if (tmpNope) {
+        tmpUsers.push(ut);
+      }
+    }
+  });
 });
 
+// Send active users after approx 30 seconds
 setInterval(function () {
-  console.log("called");
   io.sockets.emit("get users", users);
   users = [];
 }, 30000);

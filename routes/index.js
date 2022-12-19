@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const { getAll, Append, Update } = require("../crud");
+const { getAll, Update } = require("../crud");
 
 // User model
 const User = require("../models/User");

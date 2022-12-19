@@ -112,10 +112,14 @@ router.post("/login", (req, res, next) => {
 });
 
 //Logout Handle
-router.get("/logout", (req, res) => {
-  req.logout();
-  req.flash("success_msg", "লগআউট সম্পন্ন হয়েছে, ফী আমানিল্লাহ");
-  res.redirect("/users/login");
+router.get("/logout", function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    req.flash("success_msg", "লগআউট সম্পন্ন হয়েছে, ফী আমানিল্লাহ");
+    res.redirect("/users/login");
+  });
 });
 
 module.exports = router;

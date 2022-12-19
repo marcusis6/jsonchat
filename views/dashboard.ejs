@@ -242,50 +242,10 @@
     $message.attr("placeholder", "চ্যাট বন্ধ আছে").val("").focus().blur();
     $message.prop("disabled", true);
 
+    // reload after interval 
     setInterval(function () {
       window.location.reload();
     }, 900000);
-
-    // Active Response
-    socket.on("response", () => {
-      let t = moment().tz("Asia/Dhaka").format("a h:mm");
-
-      socket.emit("actRes", { user: $user, time: t });
-
-      /*$("ul#users > li").each(function (index) {
-
-				if ($(this).text().split(" ", 1) == $user) {
-
-					let t = $(this).text().split(" ");
-					t = t[1] + " " + t[2];
-					socket.emit('actRes', { user: $user, time: t });
-				}
-			});*/
-    });
-
-    // Load Enabled/Disabled Message Area
-    // socket.on("l-chat", function (data, notice, currDate) {
-    //   if (!data) {
-    //     $messageBox.children().remove();
-    //     $messageBox.append(
-    //       '<textarea disabled id="message" class="form-control" placeholder="চ্যাট বন্ধ আছে" autofocus></textarea>'
-    //     );
-    //   }
-
-    //   $notice.children().remove();
-    //   $notice.append(
-    //     '<marquee id="notice" behavior="scroll" direction="left" style="height: 25px; background-color: lightblue;">নোটিসঃ ' +
-    //       notice +
-    //       "</marquee>"
-    //   );
-
-    //   $date.children().remove();
-    //   $date.append(
-    //     '<p style="height: 25px; background-color: white; text-align: center" id="date">তারিখঃ ' +
-    //       currDate +
-    //       "</p>"
-    //   );
-    // });
 
     // Delete Messages
     socket.on("chat deleted", function () {
@@ -341,11 +301,14 @@
           true,
           "pageMessages"
         );
-        socket.emit("sound", { name: $user, sound: false });
+        socket.emit("sound", { name: $user, sound: true });
         return;
       }
       if ($(this).hasClass("fa-volume-up")) {
         sound = false;
+        $(".sound-control").removeClass("fa fa-volume-up");
+        $(".sound-control").addClass("fa fa-volume-off");
+
         createAlert(
           "",
           "",
@@ -355,38 +318,24 @@
           true,
           "pageMessages"
         );
-        $(".sound-control").removeClass("fa fa-volume-up");
-        $(".sound-control").addClass("fa fa-volume-off");
 
-        socket.emit("sound", { name: $user, sound: true });
+        socket.emit("sound", { name: $user, sound: false });
         return;
       }
     });
 
     // Sound Updated
-    // socket.on("sound updated", function (data) {
-    //   if (data) {
-    //     createAlert(
-    //       "",
-    //       "",
-    //       "Sound Preference Saved Successfully",
-    //       "success",
-    //       false,
-    //       true,
-    //       "pageMessages"
-    //     );
-    //   } else {
-    //     createAlert(
-    //       "",
-    //       "",
-    //       "Sound Preference Saved Successfully",
-    //       "success",
-    //       false,
-    //       true,
-    //       "pageMessages"
-    //     );
-    //   }
-    // });
+    socket.on("sound updated", function (data) {
+      if (data) {
+        sound = true;
+        $(".sound-control").removeClass("fa fa-volume-off ");
+        $(".sound-control").addClass("fa fa-volume-up ");
+      } else {
+        sound = false;
+        $(".sound-control").removeClass("fa fa-volume-up");
+        $(".sound-control").addClass("fa fa-volume-off");
+      }
+    });
 
     // Date Updated
     socket.on("date updated", function (data) {
@@ -536,7 +485,7 @@
 
     document.addEventListener("visibilitychange", function () {
       if (!document.hidden) {
-        document.title = "চ্যাট্রুম";
+        document.title = "Chat Room";
       }
     });
 
@@ -591,7 +540,7 @@
       }
       if (document.hidden) {
         unread++;
-        document.title = "চ্যাট্রুম(" + unread + ")";
+        document.title = "Chat Room(" + unread + ")";
         if (sound) notification.play();
       } else {
         unread = 0;

@@ -1,12 +1,11 @@
 const LocalStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const { getAll, Append } = require("../crud");
+const { getAll } = require("../crud");
 
 module.exports = function (passport) {
   passport.use(
     new LocalStrategy({ usernameField: "name" }, (name, password, done) => {
-
       // Match User
       (async function () {
         let users;
