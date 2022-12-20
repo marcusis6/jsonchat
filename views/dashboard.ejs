@@ -2,9 +2,12 @@
 <div id="pageMessages"></div>
 
 <nav class="navbar navbar-light sticky-top bg-light flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand bg-light col-md-3 col-lg-2 mr-0 px-3" href="/admin"
+  <!-- <a class="navbar-brand bg-light col-md-3 col-lg-2 mr-0 px-3" href="/admin"
     >এডমিন প্যানেল</a
-  >
+  > -->
+<a class="admin-panel text-center btn p-2 m-1 ml-5 col-sm-2 col-md-2 col-lg-2 text-left btn-outline-success" type="button" href="/admin">
+  এডমিন প্যানেল
+  </a>
   <button
     class="navbar-toggler position-absolute d-md-none collapsed"
     type="button"
@@ -27,7 +30,6 @@
     ></i>
     <a
       class="btn btn-outline-success my-2 my-sm-0 mr-2"
-      type="a"
       href="/password"
     >
     চেঞ্জ পাসওয়ার্ড 
@@ -47,11 +49,6 @@
       role="main"
       class="col-md-9 mr-sm-auto col-lg-10 px-md-4 main-section"
     >
-    <i
-    aria-hidden="true"
-    class="fa fa-angle-double-up hide-header my-2 my-sm-0 mr-2 ml-2"
-  ></i>
-      <i aria-hidden="true" class="fa fa-angle-double-down show-header"></i>
       <div class="d-flex flex-column h-100 justify-content-between bg-light">
         <div id="chat1" class="p-2 message-box">
           <h2 style="display: none" id="usr"><%=name %></h2>
@@ -105,6 +102,11 @@
         <span></span>
       </a>
     </div>
+    <div class="toggle">
+      <a id="header-toggle" href="#" class="burger active">
+        <span></span>
+      </a>
+    </div>
     <div id="sidebar_wrapper">
       <nav
         id="sidebarMenu"
@@ -148,22 +150,20 @@
       return;
     }
   });
-  $(".hide-header").on("click", function () {
-    $(".navbar").slideUp();
+  $("#header-toggle").on("click", function () {
+    $(this).toggleClass("active");
+    if (!$(this).hasClass("active")) {
+      $(".navbar").slideUp();
     const $elem = $(".main-section");
     $elem[0].style.setProperty("padding", "0px 24px 0px", "important");
     $elem[0].style.setProperty("top", "0px");
-    $(this).hide();
-    $(".show-header").show();
-  });
-
-  $(".show-header").on("click", function () {
-    $(".navbar").slideDown();
+    }
+    if ($(this).hasClass("active")) {
+      $(".navbar").slideDown();
     const $elem = $(".main-section");
     $elem[0].style.setProperty("padding", "48px 24px 0px", "important");
     $elem[0].style.removeProperty("top");
-    $(this).hide();
-    $(".hide-header").show();
+    }
   });
 
   $("#minimize-sidebar").on("click", function () {
