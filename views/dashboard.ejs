@@ -5,8 +5,12 @@
   <!-- <a class="navbar-brand bg-light col-md-3 col-lg-2 mr-0 px-3" href="/admin"
     >এডমিন প্যানেল</a
   > -->
-<a class="admin-panel text-center btn p-2 m-1 ml-5 col-sm-2 col-md-2 col-lg-2 text-left btn-outline-success" type="button" href="/admin">
-  এডমিন প্যানেল
+  <a
+    class="admin-panel text-center btn p-2 m-1 ml-5 col-sm-2 col-md-2 col-lg-2 text-left btn-outline-success"
+    type="button"
+    href="/admin"
+  >
+    এডমিন প্যানেল
   </a>
   <button
     class="navbar-toggler position-absolute d-md-none collapsed"
@@ -20,7 +24,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <ul class="navbar-nav px-3 noticeSection">
+  <ul class="navbar-nav px-3 noticeSection col-lg-6 col-md-4 col-sm-12">
     <li id="noticeBoard" class="nav-item text-nowrap"></li>
   </ul>
   <form class="form-inline my-2 my-lg-0">
@@ -28,17 +32,14 @@
       aria-hidden="true"
       class="fa fa-volume-up my-2 my-sm-0 mr-2 ml-2 sound-control"
     ></i>
-    <a
-      class="btn btn-outline-success my-2 my-sm-0 mr-2"
-      href="/password"
-    >
-    চেঞ্জ পাসওয়ার্ড 
+    <a class="btn btn-outline-success my-2 my-sm-0 mr-2" href="/password">
+      চেঞ্জ পাসওয়ার্ড
     </a>
     <button
       class="logout btn btn-outline-success my-2 my-sm-0 mr-2"
       type="button"
     >
-    লগ আউট
+      লগ আউট
     </button>
   </form>
 </nav>
@@ -96,6 +97,7 @@
           </div>
           <!--message_write-->
         </div>
+      </div>
     </main>
     <div class="toggle">
       <a id="sidebar-toggle" href="#" class="burger active">
@@ -123,7 +125,7 @@
                 border-color: #ffc107;
               "
             >
-            অনলাইন 
+              অনলাইন
             </button>
           </div>
           <ul id="users" class="nav flex-column mt-3"></ul>
@@ -154,15 +156,15 @@
     $(this).toggleClass("active");
     if (!$(this).hasClass("active")) {
       $(".navbar").slideUp();
-    const $elem = $(".main-section");
-    $elem[0].style.setProperty("padding", "0px 24px 0px", "important");
-    $elem[0].style.setProperty("top", "0px");
+      const $elem = $(".main-section");
+      $elem[0].style.setProperty("padding", "0px 24px 0px", "important");
+      $elem[0].style.setProperty("top", "0px");
     }
     if ($(this).hasClass("active")) {
       $(".navbar").slideDown();
-    const $elem = $(".main-section");
-    $elem[0].style.setProperty("padding", "48px 24px 0px", "important");
-    $elem[0].style.removeProperty("top");
+      const $elem = $(".main-section");
+      $elem[0].style.setProperty("padding", "48px 24px 0px", "important");
+      $elem[0].style.removeProperty("top");
     }
   });
 
@@ -242,7 +244,7 @@
     $message.attr("placeholder", "চ্যাট বন্ধ আছে").val("").focus().blur();
     $message.prop("disabled", true);
 
-    // reload after interval 
+    // reload after interval
     setInterval(function () {
       window.location.reload();
     }, 900000);
