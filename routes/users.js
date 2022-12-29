@@ -21,7 +21,7 @@ router.post("/register", (req, res) => {
 
   //Check required fields
   if (!name || !password || !password2) {
-    errors.push({ msg: "অনুগ্রহ করে সকল ঘর পূরন করুন" });
+    errors.push({ msg: "অনুগ্রহ করে সকল ঘর পূরণ করুন" });
   }
 
   //Check password match
@@ -117,7 +117,7 @@ router.get("/logout", function (req, res, next) {
     if (err) {
       return next(err);
     }
-    req.flash("success_msg", "লগআউট সম্পন্ন হয়েছে, ফী আমানিল্লাহ");
+    req.flash("success_msg", "লগআউট সম্পন্ন হয়েছে, ফী আমানিল্লাহ!");
     res.redirect("/users/login");
   });
 });

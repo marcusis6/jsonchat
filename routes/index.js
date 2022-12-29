@@ -13,7 +13,8 @@ const { ensureAuthenticated } = require("../config/auth");
 router.get("/", (req, res) => res.render("login"));
 router.get("/dashboard", ensureAuthenticated, (req, res) => {
   res.render("dashboard", {
-    name: req.user.name,
+    name: req.user.username,
+    userId: req.user._id,
   });
 });
 
@@ -24,6 +25,7 @@ router.get("/admin", ensureAuthenticated, (req, res) => {
   } else {
     res.render("admin", {
       name: req.user.name,
+      userId: req.user._id,
     });
   }
 });
@@ -40,7 +42,7 @@ router.post("/password", ensureAuthenticated, (req, res) => {
 
   //Check required fields
   if (!password || !password2) {
-    errors.push({ msg: "অনুগ্রহ করে সকল ঘর পূরন করুন" });
+    errors.push({ msg: "অনুগ্রহ করে সকল ঘর পূরণ করুন" });
   }
 
   //Check password match
@@ -89,7 +91,7 @@ router.get("/download", ensureAuthenticated, function (req, res) {
   res.download(file); // Set disposition and send it.
 });
 
-// Download Users Json File 
+// Download Users Json File
 router.get("/download-users", ensureAuthenticated, function (req, res) {
   var file = __dirname + "/users.json";
   res.download(file); // Set disposition and send it.

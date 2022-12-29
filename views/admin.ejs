@@ -44,6 +44,7 @@
               role="group"
               aria-label="Vertical button group"
             >
+            <h2 style="display: none" id="usrId"><%=userId %></h2>
               <button
                 id="chat-on-off"
                 type="button"
@@ -127,6 +128,7 @@
     var $delete = $("#dlt");
     var $dwn = $("#dw");
     var $toggle = $("#chat-on-off");
+    var $user_id = $("#usrId").html();
 
     socket.emit("approved");
     socket.emit("pending");
@@ -136,6 +138,10 @@
       window.location.reload();
     }, 900000);
 
+    setInterval(function () {
+      let t = moment().tz("Asia/Dhaka").format("a h:mm");
+      socket.emit("hajira", { user_id: $user_id, time: t });
+    }, 18000);
     // Active Response
     // socket.on("response", () => {
     //   let t = moment().tz("Asia/Dhaka").format("a h:mm");

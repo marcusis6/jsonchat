@@ -10,7 +10,7 @@ const crypto = require("crypto");
 // Socket IO Config
 const app = express();
 var server = require("http").Server(app);
-var io = require("socket.io")(server);
+global.io = require("socket.io")(server);
 
 const { getAll, Append, Update } = require("./crud");
 
@@ -65,8 +65,8 @@ const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, console.log(`Server started on port ${PORT}`));
 
-users = [];
-tmpUsers = [];
+global.users = [];
+global.activeUsers = [];
 connections = [];
 
 let totalApproved = 0;
@@ -106,8 +106,7 @@ function decrypt(text) {
 // Connection
 io.sockets.on("connection", function (socket) {
   connections.push(socket);
-  updateUsernames(); // To update users list on startup
-  // Get chats from mongo
+  socket.emit("get users", users); // To update users list on startup
 
   // getting last 50 messages
   let output = getAll("./storage/messages.json").reverse().slice(0, 50);
@@ -286,8 +285,6 @@ io.sockets.on("connection", function (socket) {
         decrypt(messages[i].message) +
         "\r\n";
     }
-    // console.log(output.length);
-    // write to a new file named 2pac.txt
     fs.writeFile("./routes/chatlog.txt", allmsg, (err) => {
       // throws an error, you could also catch it here
       if (err) throw err;
@@ -488,52 +485,14 @@ io.sockets.on("connection", function (socket) {
     });
   });
 
-  // New user
-  socket.on("username", function (data, callback) {
-    ut = { username: data.user, time: data.time };
-    nope = true;
-    tmpNope = true;
-
-    for (var x = 0; x < users.length; x++) {
-      if (users[x].username === data.user) {
-        nope = false;
-      }
-    }
-
-    for (var x = 0; x < tmpUsers.length; x++) {
-      if (tmpUsers[x].username === data.user) {
-        tmpNope = false;
-      }
-    }
-
-    if (nope) {
-      users.push(ut);
-      if (tmpNope) {
-        tmpUsers.push(ut);
-      }
-      // New user emitting
-      io.sockets.emit("nUser", data);
-    }
-  });
-
   // Logout
   socket.on("lg", function (data) {
-    // console.log('called');
-    for (var i = 0; i < users.length; i++) {
-      if (users[i].username == data) {
+    users.forEach((element, i) => {
+      if (data == element.id) {
         users.splice(i, 1);
-        break;
+        io.sockets.emit("lgUser", element.username);
       }
-    }
-
-    for (var i = 0; i < tmpUsers.length; i++) {
-      if (tmpUsers[i].username == data) {
-        tmpUsers.splice(i, 1);
-        break;
-      }
-    }
-
-    io.sockets.emit("lgUser", data);
+    });
   });
 
   // Send Message
@@ -558,47 +517,34 @@ io.sockets.on("connection", function (socket) {
         });
       })
       .catch((err) => console.log(err));
-
-    var clients = io.sockets.clients();
-    console.log(clients);
   });
-
-  function updateUsernames() {
-    // Emit users list
-    socket.emit("get users", users);
-  }
 
   // Hajira - Active users reponse after approx 17sec
   socket.on("hajira", function (data, callback) {
-    ut = { username: data.user, time: data.time };
-    nope = true;
-    tmpNope = true;
-
-    for (var x = 0; x < users.length; x++) {
-      if (users[x].username === data.user) {
-        nope = false;
+    (async function () {
+      let users;
+      users = getAll("./storage/users.json");
+      if (users.length > 0) {
+        users = users.filter((x) => x._id == data.user_id);
+        return users[0];
       }
-    }
-
-    for (var x = 0; x < tmpUsers.length; x++) {
-      if (tmpUsers[x].username === data.user) {
-        tmpNope = false;
+    })().then((user) => {
+      if (user) {
+        activeUsers.push(user._id);
       }
-    }
-
-    if (nope) {
-      users.push(ut);
-      if (tmpNope) {
-        tmpUsers.push(ut);
-      }
-    }
+    });
   });
 });
 
 // Send active users after approx 30 seconds
 setInterval(function () {
+  users.forEach((element, i) => {
+    if (!activeUsers.includes(element.id)) {
+      users.splice(i, 1);
+    }
+  });
   io.sockets.emit("get users", users);
-  users = [];
+  activeUsers = [];
 }, 30000);
 
 module.exports.func = (user) => {

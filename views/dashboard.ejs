@@ -53,11 +53,12 @@
       <div class="d-flex flex-column h-100 justify-content-between bg-light">
         <div id="chat1" class="p-2 message-box">
           <h2 style="display: none" id="usr"><%=name %></h2>
+          <h2 style="display: none" id="usrId"><%=userId %></h2>
           <a href="javascript:" id="jump-to-last"
             ><i class="icon-chevron-up">&#9660;</i></a
           >
           <div id="loadmore" style="text-align: center">
-            <a href="javascript:">আরো দেখব</a>
+            <a href="javascript:">আরও দেখবো</a>
           </div>
           <ul id="chat" class="list-unstyled"></ul>
         </div>
@@ -224,6 +225,7 @@
     var $chat1 = $("#chat1");
     var $users = $("#users");
     var $user = $("#usr").html();
+    var $user_id = $("#usrId").html();
     var $lmore = $("#loadmore");
     var $messageBox = $("#messageBox");
     var $notice = $("#noticeBoard");
@@ -339,50 +341,17 @@
       }
     });
 
-    // Date Updated
-    socket.on("date updated", function (data) {
-      $date.children().remove();
-      $date.append(
-        '<p style="height: 25px; background-color: white; text-align: center" id="date">তারিখঃ ' +
-          data +
-          "</p>"
-      );
-    });
-
-    // Active users mark by adding class act
-    socket.on("actM", (data) => {
-      $("ul#users > li").each(function (index) {
-        console.log("actmark called");
-        if ($(this).text().split(" ", 1) == data) {
-          $(this).addClass("act");
-        }
-      });
-    });
-
-    // InActive users remove and Active users unmark
-    socket.on("inAct", () => {
-      $("ul#users > li").each(function (index) {
-        if (!$(this).hasClass("act")) {
-          $(this).fadeOut("normal", function () {
-            $(this).remove();
-          });
-          if (sound) {
-            disconnected.play();
-          }
-        } else {
-          $(this).removeClass("act");
-        }
-      });
-    });
-
     // Logout
     $(".logout").click(function () {
-      socket.emit("lg", $user);
+      socket.emit("lg", $user_id);
       window.location.href = "/users/logout";
     });
 
     // Remove logout user
     socket.on("lgUser", function (data) {
+      if (data == $user) {
+        window.location.href = "/users/logout";
+      }
       $("ul#users > li").each(function (index) {
         if ($(this).text().split(" ", 1) == data) {
           $(this).fadeOut("normal", function () {
@@ -399,7 +368,7 @@
     socket.on("nUser", function (data) {
       var nouser = true;
       $("ul#users > li").each(function (index) {
-        if ($(this).text().split(" ", 1) == data.user) {
+        if ($(this).text().split(" ", 1) == data.username) {
           nouser = false;
         }
       });
@@ -408,7 +377,7 @@
         $users
           .append(
             '<li class="left clearfix"><div class="header_sec"><strong class="primary-font"><mark>' +
-              data.user +
+              data.username +
               '</mark></strong> <i class="pull-right">' +
               data.time +
               "</i></div></li>"
@@ -432,6 +401,16 @@
             "</i></div></li>"
         );
       }
+
+      // If i am not a active usr, logout myself
+      let exist = false;
+      $("ul#users > li").each(function (index) {
+        if ($(this).text().split(" ", 1) == $user) {
+          exist = true;
+        }
+      });
+
+      if (!exist) window.location.href = "/users/logout";
     });
 
     // Message submission
@@ -495,57 +474,70 @@
     // New message append
     socket.on("new message", function (data) {
       var delete_button = "";
+      var exist = false;
 
-      if (data.user == $user) {
-        delete_button =
-          '<a id="b' +
-          counter +
-          '" message_id="' +
-          data._id +
-          '" href="javascript:"><i class="fas fa-trash"></i></a>';
-      } else {
-        if (sound) notification.play();
-      }
+      $("ul#chat > li p").each(function (index) {
+        //let id = $(this).attr("id");
+        //console.log(id + " , " + data._id);
+        if ($(this).attr("id") == data._id) {
+          //console.log("id matched");
+          $("ul#chat > li.pending").remove();
+          exist = true;
+        }
+      });
 
-      $("ul#chat > li.pending").remove();
+      if (!exist) {
+        if (data.user == $user) {
+          delete_button =
+            '<a id="b' +
+            counter +
+            '" message_id="' +
+            data._id +
+            '" href="javascript:"><i class="fas fa-trash"></i></a>';
+        } else {
+          if (sound) notification.play();
+        }
 
-      data.msg = data.msg.replace(/(?:\r\n|\r|\n)/g, "<br>");
+        $("ul#chat > li.pending").remove();
 
-      $chat.append(
-        '<li  style="padding: 0px; margin: 1px;" class="left clearfix "> <div class="chat-body1 clearfix "> <p id="' +
-          data._id +
-          '"><strong class="text-info">' +
-          data.user +
-          ": </strong>" +
-          data.msg +
-          '<i class="text-muted">' +
-          data.time +
-          ' <a id="a' +
-          counter +
-          '" title="' +
-          data.user +
-          ": " +
-          data.msg +
-          "     " +
-          data.time +
-          '" href="javascript:"><i class="fas fa-reply"></i></a> ' +
-          delete_button +
-          " </i></p> </div> </li>"
-      );
-      counter++;
+        data.msg = data.msg.replace(/(?:\r\n|\r|\n)/g, "<br>");
 
-      const element = document.querySelector("#jump-to-last");
-      const value = element.style.display;
+        $chat.append(
+          '<li  style="padding: 0px; margin: 1px;" class="left clearfix "> <div class="chat-body1 clearfix "> <p id="' +
+            data._id +
+            '"><strong class="text-info">' +
+            data.user +
+            ": </strong>" +
+            data.msg +
+            '<i class="text-muted">' +
+            data.time +
+            ' <a id="a' +
+            counter +
+            '" title="' +
+            data.user +
+            ": " +
+            data.msg +
+            "     " +
+            data.time +
+            '" href="javascript:"><i class="fas fa-reply"></i></a> ' +
+            delete_button +
+            " </i></p> </div> </li>"
+        );
+        counter++;
 
-      if (value == "" || value == "undefined" || value == "none") {
-        $chat1.scrollTop($chat.get(0).scrollHeight);
-      }
-      if (document.hidden) {
-        unread++;
-        document.title = "Chat Room(" + unread + ")";
-        if (sound) notification.play();
-      } else {
-        unread = 0;
+        const element = document.querySelector("#jump-to-last");
+        const value = element.style.display;
+
+        if (value == "" || value == "undefined" || value == "none") {
+          $chat1.scrollTop($chat.get(0).scrollHeight);
+        }
+        if (document.hidden) {
+          unread++;
+          document.title = "Chat Room(" + unread + ")";
+          if (sound) notification.play();
+        } else {
+          unread = 0;
+        }
       }
     });
 
@@ -636,8 +628,17 @@
 
     setInterval(function () {
       let t = moment().tz("Asia/Dhaka").format("a h:mm");
-      socket.emit("hajira", { user: $user, time: t });
-      console.log("response called");
+      socket.emit("hajira", { user_id: $user_id, time: t });
+
+      // If i am not a active usr, logout myself
+      let exist = false;
+      $("ul#users > li").each(function (index) {
+        if ($(this).text().split(" ", 1) == $user) {
+          exist = true;
+        }
+      });
+
+      if (!exist) window.location.href = "/users/logout";
     }, 18000);
 
     // Jump to Last msg funtionality
