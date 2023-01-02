@@ -70,6 +70,13 @@
             class="message_write fixed-bottom"
             style="position: relative"
           >
+            <button
+              class="btn my-2 my-sm-0 mr-2 btn-danger"
+              style="top: -15%; position: absolute; right: 0; display: none"
+              id="cancelEditing"
+            >
+              Cancel
+            </button>
             <div><% include ./partials/messages %></div>
             <button
               id="emoji-button"
@@ -225,7 +232,6 @@
     var $chat1 = $("#chat1");
     var $users = $("#users");
     var $user = $("#usr").html();
-    var $user_id = $("#usrId").html();
     var $lmore = $("#loadmore");
     var $messageBox = $("#messageBox");
     var $notice = $("#noticeBoard");
@@ -233,14 +239,14 @@
     var counter = 0;
     var history = [];
     var index = -1;
-    var sound = true;
-    var disconnected = new Audio("/disconnected.wav");
-    var connected = new Audio("/connected.wav");
-    var notification = new Audio("/notification.wav");
+    var firstLoad = true;
+    const reply_button =
+      '" href="javascript:"><i class="fas fa-reply"></i></a> ';
 
     socket.emit("load chat"); // chat should be enable or disable ?
     socket.emit("get notice"); // get notice
     socket.emit("get sound", { name: $user }); // get sound preference
+    socket.emit("get old messages");
 
     // by default chat is disabled
     $message.attr("placeholder", "চ্যাট বন্ধ আছে").val("").focus().blur();
@@ -260,7 +266,6 @@
 
     // Chat Option Toggled
     socket.on("chat-toggle", function (data) {
-      console.log("dash");
       //$messageBox.children().remove();
       if (data) {
         $message.attr("placeholder", "এখানে লিখুন...").val("").focus().blur();
@@ -418,17 +423,31 @@
       if (e.which == 13 && !e.shiftKey) {
         msg = $message.val();
         if ($.trim(msg).length > 0) {
-          let t = moment().tz("Asia/Dhaka").format("a h:mm");
-          socket.emit("send message", {
-            user: $user,
-            msg: $.trim(msg),
-            time: t,
-          });
-          $message.val("");
-          $chat.append('<li class="pending">ম্যাসেজ পাঠানো হচ্ছে...</li>');
-          $chat1.scrollTop($chat.get(0).scrollHeight);
-          history.unshift(msg);
-          index = -1;
+          let message_id = $(".messageHolder").attr("id");
+
+          if ($message.hasClass("editing") && message_id && $user_id) {
+            socket.emit("update message", {
+              user_id: $user_id,
+              message_id: message_id,
+              msg: $.trim(msg),
+            });
+            $("#cancelEditing").hide();
+            $(message).removeClass("editing");
+            $(message).val("");
+            $(".messageHolder").removeClass("messageHolder");
+          } else {
+            let t = moment().tz("Asia/Dhaka").format("a h:mm");
+            socket.emit("send message", {
+              user: $user,
+              msg: $.trim(msg),
+              time: t,
+            });
+            $message.val("");
+            $chat.append('<li class="pending">ম্যাসেজ পাঠানো হচ্ছে...</li>');
+            $chat1.scrollTop($chat.get(0).scrollHeight);
+            history.unshift(msg);
+            index = -1;
+          }
         }
       }
     });
@@ -474,6 +493,7 @@
     // New message append
     socket.on("new message", function (data) {
       var delete_button = "";
+      var edit_button = "";
       var exist = false;
 
       $("ul#chat > li p").each(function (index) {
@@ -494,6 +514,13 @@
             '" message_id="' +
             data._id +
             '" href="javascript:"><i class="fas fa-trash"></i></a>';
+
+          edit_button =
+            '<a id="edit' +
+            counter +
+            '" message_id="' +
+            data._id +
+            '" style="padding-right: 2px;" href="javascript:"><i class="fas fa-edit"></i></a>';
         } else {
           if (sound) notification.play();
         }
@@ -519,7 +546,8 @@
             data.msg +
             "     " +
             data.time +
-            '" href="javascript:"><i class="fas fa-reply"></i></a> ' +
+            reply_button +
+            edit_button +
             delete_button +
             " </i></p> </div> </li>"
         );
@@ -543,53 +571,70 @@
 
     // Old message prepend on startup
     socket.on("output", function (data) {
+      console.log("arrived");
       //socket.emit('load chat');
+      if (firstLoad) {
+        console.log("called");
+        let t = moment().tz("Asia/Dhaka").format("a h:mm");
+        socket.emit("username", { user: $user, time: t });
 
-      let t = moment().tz("Asia/Dhaka").format("a h:mm");
-      socket.emit("username", { user: $user, time: t });
+        if (data.length) {
+          for (var x = 0; x < data.length; x++) {
+            data[x].message = data[x].message.replace(
+              /(?:\r\n|\r|\n)/g,
+              "<br>"
+            );
 
-      if (data.length) {
-        for (var x = 0; x < data.length; x++) {
-          data[x].message = data[x].message.replace(/(?:\r\n|\r|\n)/g, "<br>");
+            var delete_button = "";
+            var edit_button = "";
 
-          var delete_button = "";
+            if (data[x].name == $user) {
+              delete_button =
+                '<a id="b' +
+                counter +
+                '" message_id="' +
+                data[x]._id +
+                '" href="javascript:"><i class="fas fa-trash"></i></a>';
 
-          if (data[x].name == $user) {
-            delete_button =
-              '<a id="b' +
-              counter +
-              '" message_id="' +
+              edit_button =
+                '<a id="edit' +
+                counter +
+                '" message_id="' +
+                data[x]._id +
+                '" style="padding-right: 2px;" href="javascript:"><i class="fas fa-edit"></i></a>';
+            }
+
+            var message =
+              '<li  style="padding: 0px; margin: 1px;" class="left clearfix "> <div class="chat-body1 clearfix "> <p id="' +
               data[x]._id +
-              '" href="javascript:"><i class="fas fa-trash"></i></a>';
+              '"><strong class="text-info">' +
+              data[x].name +
+              ": </strong>" +
+              data[x].message +
+              '<i class="text-muted">' +
+              data[x].time +
+              ' <a id="a' +
+              counter +
+              '" title="' +
+              data[x].name +
+              ": " +
+              data[x].message +
+              "     " +
+              data[x].time +
+              reply_button +
+              edit_button +
+              delete_button +
+              " </i></p> </div> </li>";
+
+            $chat.prepend(message);
+            counter++;
           }
-
-          var message =
-            '<li  style="padding: 0px; margin: 1px;" class="left clearfix "> <div class="chat-body1 clearfix "> <p id="' +
-            data[x]._id +
-            '"><strong class="text-info">' +
-            data[x].name +
-            ": </strong>" +
-            data[x].message +
-            '<i class="text-muted">' +
-            data[x].time +
-            ' <a id="a' +
-            counter +
-            '" title="' +
-            data[x].name +
-            ": " +
-            data[x].message +
-            "     " +
-            data[x].time +
-            '" href="javascript:"><i class="fas fa-reply"></i></a> ' +
-            delete_button +
-            " </i></p> </div> </li>";
-
-          $chat.prepend(message);
-          counter++;
         }
-      }
 
-      $chat1.scrollTop($chat.get(0).scrollHeight);
+        $chat1.scrollTop($chat.get(0).scrollHeight);
+
+        firstLoad = false;
+      }
     });
 
     // Delete Single Message
@@ -598,10 +643,45 @@
       $(id).remove();
     });
 
+    // Update Single Message
+    socket.on("message updated", function (data) {
+      if (data?._id && data?.message) {
+        $(".editingOngoing").show();
+        $(".editingPending").remove();
+
+        var id = "#" + data._id;
+        let title = $(id).children(".text-info").detach();
+        let buttons = $(id).children(".text-muted").detach();
+        $(id).text("");
+        title.appendTo($(id));
+        $(id).append(data.message);
+        buttons.appendTo($(id));
+      }
+    });
+
     // Load more message prepend
     socket.on("lm-meesages", function (data) {
       if (data.length) {
+        var delete_button = "";
+        var edit_button = "";
+
         for (var x = 0; x < data.length; x++) {
+          if (data[x].name == $user) {
+            delete_button =
+              '<a id="b' +
+              counter +
+              '" message_id="' +
+              data[x]._id +
+              '" href="javascript:"><i class="fas fa-trash"></i></a>';
+
+            edit_button =
+              '<a id="edit' +
+              counter +
+              '" message_id="' +
+              data[x]._id +
+              '" style="padding-right: 2px;" href="javascript:"><i class="fas fa-edit"></i></a>';
+          }
+
           $chat.prepend(
             '<li  style="padding: 0px; margin: 1px;" class="left clearfix "> <div class="chat-body1 clearfix "> <p><strong class="text-info">' +
               data[x].name +
@@ -617,7 +697,10 @@
               data[x].message +
               "     " +
               data[x].time +
-              '" href="javascript:"><i class="fas fa-reply"></i></a></i></p> </div> </li>'
+              reply_button +
+              edit_button +
+              delete_button +
+              " </i></p> </div> </li>"
           );
           counter++;
         }
@@ -639,7 +722,8 @@
       });
 
       if (!exist) window.location.href = "/users/logout";
-    }, 18000);
+      console.log("hajira from dashboard");
+    }, hajiraInterval);
 
     // Jump to Last msg funtionality
     var jump_to_button = $("#jump-to-last");
@@ -680,6 +764,9 @@
     });
 
     $chat.on("click", "a[id^='a']", function () {
+      if ($message.hasClass("editing")) {
+        cancelEditing();
+      }
       var $text_to_reply = $(this).attr("title").replace(/<br>/g, "\n");
       if ($text_to_reply.length > 200) {
         $text_to_reply =
@@ -696,6 +783,9 @@
     });
 
     $chat.on("click", "a[id^='b']", function () {
+      if ($message.hasClass("editing")) {
+        cancelEditing();
+      }
       var result = confirm("Want to delete?");
       if (result) {
         var message_id = $(this).attr("message_id");
@@ -705,5 +795,52 @@
         });
       }
     });
+
+    $chat.on("click", "a[id^='edit']", function () {
+      if ($message.hasClass("editing")) {
+        cancelEditing();
+      }
+      var parent = $(this).parent().parent();
+      var clone = parent.clone(); // cloning the p element
+      clone.children().detach(); // emitting all children to get the message text
+
+      $(this).parent().parent().addClass("messageHolder");
+
+      $("#cancelEditing").show();
+
+      $message.addClass("editing");
+      $message.val(clone.html());
+      $message.focus();
+      $(this)
+        .parent()
+        .parent()
+        .parent()
+        .parent()
+        .children()
+        .addClass("editingOngoing")
+        .hide();
+
+      $(this)
+        .parent()
+        .parent()
+        .parent()
+        .parent()
+        .append(
+          '<li class="pending editingPending">ম্যাসেজ এডিট করা হচ্ছে ...</li>'
+        );
+    });
   });
+
+  $("#cancelEditing").click(function () {
+    cancelEditing();
+  });
+
+  const cancelEditing = () => {
+    $("#cancelEditing").hide();
+    $(".editingOngoing").show();
+    $(".editingPending").remove();
+    $(message).removeClass("editing");
+    $(message).val("");
+    $(".messageHolder").removeClass("messageHolder");
+  };
 </script>

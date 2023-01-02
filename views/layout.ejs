@@ -111,6 +111,14 @@
     <%- body %>
   </body>
 
+  <script>
+    var sound = true;
+    var disconnected = new Audio("/disconnected.wav");
+    var connected = new Audio("/connected.wav");
+    var notification = new Audio("/notification.wav");
+    var hajiraInterval = 10000; // every 10sec client will send hajira
+    var $user_id = $("#usrId").html();
+  </script>
   <style>
     body {
       font-size: 1.2rem;

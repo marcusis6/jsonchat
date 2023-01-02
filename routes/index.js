@@ -33,6 +33,7 @@ router.get("/admin", ensureAuthenticated, (req, res) => {
 router.get("/password", ensureAuthenticated, (req, res) => {
   res.render("password", {
     name: req.user.name,
+    userId: req.user._id,
   });
 });
 

@@ -67,7 +67,7 @@ server.listen(PORT, console.log(`Server started on port ${PORT}`));
 
 global.users = [];
 global.activeUsers = [];
-connections = [];
+//connections = [];
 
 let totalApproved = 0;
 let totalPending = 0;
@@ -105,8 +105,8 @@ function decrypt(text) {
 
 // Connection
 io.sockets.on("connection", function (socket) {
-  connections.push(socket);
-  socket.emit("get users", users); // To update users list on startup
+  //connections.push(socket);
+  socket.emit("get users", users); // To update users list on connection startup
 
   // getting last 50 messages
   let output = getAll("./storage/messages.json").reverse().slice(0, 50);
@@ -147,14 +147,17 @@ io.sockets.on("connection", function (socket) {
 
   if (unrecognized) {
     socket.emit("output", []);
-  } else {
+  }
+
+  socket.on("get old messages", function () {
     for (let i = 0; i < output.length; i++) {
       output[i].message = decrypt(output[i].message);
     }
 
     // Emit the messages
     socket.emit("output", output);
-  }
+    console.log("output called");
+  });
 
   socket.on("load chat", function () {
     let chatOption = false;
@@ -483,6 +486,30 @@ io.sockets.on("connection", function (socket) {
         io.sockets.emit("message deleted", { _id: data.message_id });
       }
     });
+  });
+
+  // Update Message
+  socket.on("update message", function (data) {
+    if (data.message_id && data.msg && data.user_id) {
+      let users = getAll("./storage/users.json");
+      let messages = getAll("./storage/messages.json");
+      users.forEach((item) => {
+        if (item._id == data.user_id) {
+          messages.forEach((item) => {
+            if (item._id == data.message_id) {
+              item.message = encrypt(data.msg);
+            }
+          });
+
+          Update("./storage/messages.json", messages);
+          // Send message updated signal
+          io.sockets.emit("message updated", {
+            _id: data.message_id,
+            message: data.msg,
+          });
+        }
+      });
+    }
   });
 
   // Logout

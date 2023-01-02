@@ -16,8 +16,7 @@
     </li>
   </ul>
 
-  <div id="pageMessages">
-  </div>
+  <div id="pageMessages"></div>
   <form class="form-inline my-2 my-lg-0">
     <a
       class="btn btn-outline-success my-2 my-sm-0 mr-2"
@@ -34,7 +33,7 @@
     <main
       role="main"
       class="col-md-12 mr-sm-auto col-lg-12 px-md-4 main-section"
-      style="padding-top: 7rem; overflow-y: auto;"
+      style="padding-top: 7rem; overflow-y: auto"
     >
       <div class="d-flex flex-column h-100 justify-content-between bg-light">
         <div class="tab-content">
@@ -44,7 +43,7 @@
               role="group"
               aria-label="Vertical button group"
             >
-            <h2 style="display: none" id="usrId"><%=userId %></h2>
+              <h2 style="display: none" id="usrId"><%=userId %></h2>
               <button
                 id="chat-on-off"
                 type="button"
@@ -56,7 +55,11 @@
               <button id="dw" type="button" class="btn btn-secondary m-2">
                 Download Chat
               </button>
-              <button id="download-users" type="button" class="btn btn-secondary m-2">
+              <button
+                id="download-users"
+                type="button"
+                class="btn btn-secondary m-2"
+              >
                 Download Users Json
               </button>
               <button id="dlt" type="button" class="btn btn-danger m-2">
@@ -86,11 +89,15 @@
               </button>
             </div>
           </div>
-          <div id="users1" class="member_list mt-4 container tab-pane fade" style="width: 100%">
+          <div
+            id="users1"
+            class="member_list mt-4 container tab-pane fade"
+            style="width: 100%"
+          >
             <div id="loadpending" style="text-align: center">
               <a href="javascript:">see more</a>
             </div>
-  
+
             <ul id="users" class="list-unstyled list-group"></ul>
             <h2 style="display: none" id="admin-usr"><%=name %></h2>
           </div>
@@ -108,7 +115,6 @@
             </div>
           </div>
           <!--chat_area-->
-        </div>
         </div>
       </div>
     </main>
@@ -128,7 +134,6 @@
     var $delete = $("#dlt");
     var $dwn = $("#dw");
     var $toggle = $("#chat-on-off");
-    var $user_id = $("#usrId").html();
 
     socket.emit("approved");
     socket.emit("pending");
@@ -141,12 +146,8 @@
     setInterval(function () {
       let t = moment().tz("Asia/Dhaka").format("a h:mm");
       socket.emit("hajira", { user_id: $user_id, time: t });
-    }, 18000);
-    // Active Response
-    // socket.on("response", () => {
-    //   let t = moment().tz("Asia/Dhaka").format("a h:mm");
-    //   socket.emit("actRes", { user: $user, time: t });
-    // });
+      console.log("hajira from admin panel");
+    }, hajiraInterval);
 
     // Logout
     $("#button").click(function () {
@@ -157,7 +158,15 @@
     // Delete Notice
     $("#dlt-notice").click(function () {
       socket.emit("notice", "");
-      createAlert('','','Notice Deleted Successfully.','success',false,true,'pageMessages');
+      createAlert(
+        "",
+        "",
+        "Notice Deleted Successfully.",
+        "success",
+        false,
+        true,
+        "pageMessages"
+      );
     });
 
     socket.on("registered", function (data, index) {
@@ -231,13 +240,22 @@
       if ($.trim(msg).length > 0) {
         socket.emit("notice", msg);
         $("#notice-body").val("");
-        createAlert('','','Notice Updated Successfully.','success',false,true,'pageMessages');
+        createAlert(
+          "",
+          "",
+          "Notice Updated Successfully.",
+          "success",
+          false,
+          true,
+          "pageMessages"
+        );
       }
     });
 
     var unread = 0;
     // New message append
     socket.on("new message", function (data) {
+      if (sound) notification.play();
       unread++;
       document.title = "Chat Room (" + unread + ")";
     });
@@ -539,7 +557,15 @@
     // Delete
     $delete.click(function () {
       socket.emit("dlt");
-      createAlert('','','Chat Deleted Successfully.','success',false,true,'pageMessages');
+      createAlert(
+        "",
+        "",
+        "Chat Deleted Successfully.",
+        "success",
+        false,
+        true,
+        "pageMessages"
+      );
     });
 
     // Download
@@ -553,7 +579,7 @@
       socket.emit("Download Users");
       window.open("/download-users", "_blank");
     });
-    
+
     $("#chatToggleSwitch").click(function () {
       if ($("#chatToggleSwitch").is(":checked") == true) {
         console.log("checked");

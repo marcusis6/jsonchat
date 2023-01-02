@@ -17,6 +17,11 @@ module.exports = function (passport) {
         }
       })()
         .then((user) => {
+          //Check required fields
+          if (!name || !password) {
+            errors.push({ msg: "অনুগ্রহ করে সকল ঘর পূরণ করুন" });
+          }
+
           if (!user) {
             return done(null, false, { message: "এই নামে কোনো আইডি নেই" });
           }
