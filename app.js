@@ -560,6 +560,8 @@ io.sockets.on("connection", function (socket) {
         activeUsers.push(user._id);
       }
     });
+
+    console.log(data.user_id + " " + data.time);
   });
 });
 
