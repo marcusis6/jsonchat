@@ -30,11 +30,11 @@ module.exports = function (passport) {
             return done(null, false, { message: "এই আইডি এখনও অনুমোদিত হয়নি" });
           }
 
-          if (users.filter((x) => x.username == user.username).length > 0) {
-            return done(null, false, {
-              message: "এই আইডি অন্য কোথাও লগইন আছে!",
-            });
-          }
+          // if (users.filter((x) => x.username == user.username).length > 0) {
+          //   return done(null, false, {
+          //     message: "এই আইডি অন্য কোথাও লগইন আছে!",
+          //   });
+          // }
 
           // Match password
           bcrypt.compare(password, user.password, (err, isMatch) => {
