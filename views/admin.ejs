@@ -143,11 +143,11 @@
       window.location.reload();
     }, 900000);
 
-    setInterval(function () {
-      let t = moment().tz("Asia/Dhaka").format("a h:mm");
-      socket.emit("hajira", { user_id: $user_id, time: t });
-      console.log("hajira from admin panel");
-    }, hajiraInterval);
+    // setInterval(function () {
+    //   let t = moment().tz("Asia/Dhaka").format("a h:mm");
+    //   socket.emit("hajira", { user_id: $user_id, time: t });
+    //   console.log("hajira from admin panel");
+    // }, hajiraInterval);
 
     // Logout
     $("#button").click(function () {

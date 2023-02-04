@@ -571,10 +571,10 @@
 
     // Old message prepend on startup
     socket.on("output", function (data) {
-      console.log("arrived");
+      // console.log("arrived");
       //socket.emit('load chat');
       if (firstLoad) {
-        console.log("called");
+        // console.log("called");
         let t = moment().tz("Asia/Dhaka").format("a h:mm");
         socket.emit("username", { user: $user, time: t });
 
@@ -709,21 +709,21 @@
       }
     });
 
-    setInterval(function () {
-      let t = moment().tz("Asia/Dhaka").format("a h:mm");
-      socket.emit("hajira", { user_id: $user_id, time: t });
+    // setInterval(function () {
+    //   let t = moment().tz("Asia/Dhaka").format("a h:mm");
+    //   socket.emit("hajira", { user_id: $user_id, time: t });
 
-      // If i am not a active usr, logout myself
-      let exist = false;
-      $("ul#users > li").each(function (index) {
-        if ($(this).text().split(" ", 1) == $user) {
-          exist = true;
-        }
-      });
+    //   // If i am not a active usr, logout myself
+    //   let exist = false;
+    //   $("ul#users > li").each(function (index) {
+    //     if ($(this).text().split(" ", 1) == $user) {
+    //       exist = true;
+    //     }
+    //   });
 
-      if (!exist) window.location.href = "/users/logout";
-      console.log("hajira from dashboard");
-    }, hajiraInterval);
+    //   if (!exist) window.location.href = "/users/logout";
+    //   console.log("hajira from dashboard");
+    // }, hajiraInterval);
 
     // Jump to Last msg funtionality
     var jump_to_button = $("#jump-to-last");

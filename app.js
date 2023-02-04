@@ -156,7 +156,7 @@ io.sockets.on("connection", function (socket) {
 
     // Emit the messages
     socket.emit("output", output);
-    console.log("output called");
+    // console.log("output called");
   });
 
   socket.on("load chat", function () {
@@ -546,35 +546,33 @@ io.sockets.on("connection", function (socket) {
       .catch((err) => console.log(err));
   });
 
-  // Hajira - Active users reponse after approx 17sec
-  socket.on("hajira", function (data, callback) {
-    (async function () {
-      let users;
-      users = getAll("./storage/users.json");
-      if (users.length > 0) {
-        users = users.filter((x) => x._id == data.user_id);
-        return users[0];
-      }
-    })().then((user) => {
-      if (user) {
-        activeUsers.push(user._id);
-      }
-    });
-
-    console.log(data.user_id + " " + data.time);
-  });
+  // Hajira - Active users reponse after approx 5minutes
+  //   socket.on("hajira", function (data, callback) {
+  //     (async function () {
+  //       let users;
+  //       users = getAll("./storage/users.json");
+  //       if (users.length > 0) {
+  //         users = users.filter((x) => x._id == data.user_id);
+  //         return users[0];
+  //       }
+  //     })().then((user) => {
+  //       if (user) {
+  //         activeUsers.push(user._id);
+  //       }
+  //     });
+  //   });
 });
 
-// Send active users after approx 30 seconds
-setInterval(function () {
-  users.forEach((element, i) => {
-    if (!activeUsers.includes(element.id)) {
-      users.splice(i, 1);
-    }
-  });
-  io.sockets.emit("get users", users);
-  activeUsers = [];
-}, 60000);
+// Send active users after approx 15 minutes
+// setInterval(function () {
+//   users.forEach((element, i) => {
+//     if (!activeUsers.includes(element.id)) {
+//       users.splice(i, 1);
+//     }
+//   });
+//   io.sockets.emit("get users", users);
+//   activeUsers = [];
+// }, 900000);
 
 module.exports.func = (user) => {
   io.sockets.emit("registered", user, totalPending);

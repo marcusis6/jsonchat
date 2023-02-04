@@ -9,10 +9,36 @@ const { getAll, Append } = require("../crud");
 const User = require("../models/User");
 
 // Login Page
-router.get("/login", (req, res) => res.render("login"));
+router.get("/login", (req, res) => {
+  let exist = false;
+  users.forEach((element) => {
+    if (req.user?._id == element.id) exist = true;
+  });
+  if (exist) {
+    res.render("dashboard", {
+      name: req.user.username,
+      userId: req.user._id,
+    });
+  } else {
+    res.render("login");
+  }
+});
 
 // Register Page
-router.get("/register", (req, res) => res.render("register"));
+router.get("/register", (req, res) => {
+  let exist = false;
+  users.forEach((element) => {
+    if (req.user?._id == element.id) exist = true;
+  });
+  if (exist) {
+    res.render("dashboard", {
+      name: req.user.username,
+      userId: req.user._id,
+    });
+  } else {
+    res.render("register");
+  }
+});
 
 // Register Handle
 router.post("/register", (req, res) => {
