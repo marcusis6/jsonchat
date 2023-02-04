@@ -41,13 +41,17 @@ module.exports = function (passport) {
             if (err) throw err;
 
             if (isMatch) {
-              let t = moment().locale("bn").tz("Asia/Dhaka").format("a h:mm");
-              let ut = { username: user.username, time: t, id: user._id };
-              users.push(ut);
-              activeUsers.push(user._id);
-              io.sockets.emit("nUser", ut);
+              if (users.filter((x) => x.username == user.username).length > 0) {
+                return done(null, user);
+              } else {
+                let t = moment().locale("bn").tz("Asia/Dhaka").format("a h:mm");
+                let ut = { username: user.username, time: t, id: user._id };
+                users.push(ut);
+                activeUsers.push(user._id);
+                io.sockets.emit("nUser", ut);
 
-              return done(null, user);
+                return done(null, user);
+              }
             } else {
               return done(null, false, { message: "পাসওয়ার্ড ভুল হচ্ছে!" });
             }
