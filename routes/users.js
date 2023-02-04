@@ -15,10 +15,7 @@ router.get("/login", (req, res) => {
     if (req.user?._id == element.id) exist = true;
   });
   if (exist) {
-    res.render("dashboard", {
-      name: req.user.username,
-      userId: req.user._id,
-    });
+    res.redirect("/dashboard");
   } else {
     res.render("login");
   }
