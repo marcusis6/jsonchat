@@ -408,14 +408,14 @@
       }
 
       // If i am not a active usr, logout myself
-      let exist = false;
-      $("ul#users > li").each(function (index) {
-        if ($(this).text().split(" ", 1) == $user) {
-          exist = true;
-        }
-      });
+      // let exist = false;
+      // $("ul#users > li").each(function (index) {
+      //   if ($(this).text().split(" ", 1) == $user) {
+      //     exist = true;
+      //   }
+      // });
 
-      if (!exist) window.location.href = "/users/logout";
+      // if (!exist) window.location.href = "/users/logout";
     });
 
     // Message submission
