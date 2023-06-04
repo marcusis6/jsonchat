@@ -37,7 +37,9 @@ function socketService(io: Socket): void {
       handleChatMessage(message, callback, socket);
     });
 
-    socket.on("join", broadcastUsersList);
+    //socket.on("join", broadcastUsersList);
+
+    broadcastUsersList();
 
     // Function to broadcast the active users list of connected users
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -61,6 +63,7 @@ function socketService(io: Socket): void {
         ]) => username
       );
 
+      console.log("Broadcasting users list");
       console.log(`active users: ${usernames}`);
 
       const uniqueUsernames = [...new Set(usernames)];
