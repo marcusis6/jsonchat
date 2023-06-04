@@ -1,0 +1,46 @@
+{
+  "home": "Home",
+  "return_to_home": "Return to Home",
+  "select_language": "Select Language",
+  "user": {
+    "register": "Register",
+    "login": "Log In",
+    "username": "Username",
+    "password": "Password",
+    "confirm_password": "Confirm Password"
+  },
+  "alert_user": {
+    "reg_success": "You have been registered successfully. Please contact admin to active your account",
+    "login_failed": "Failed to login! Incorrect username or password"
+  },
+  "button": {
+    "submit": "Submit",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
+  "placeholder": {
+    "username": "type name",
+    "password": "type password",
+    "confirm_password": "type confirm password"
+  },
+  "lead": {
+    "register": "Don't have an account?",
+    "login": "Already have an account?",
+    "not_found": "The page you are looking for could not be found."
+  },
+  "client_error": {
+    "error": "Error",
+    "forbidden": "403 Forbidden",
+    "not_authorized": "You are not authorized to access this resource.",
+    "not_found": "404 Not Found",
+    "invalid_error": "Invalid data",
+    "wrong_password": "WrongPassword",
+    "invalid_credentials": "Invalid credentials",
+    "inactive_user": "Inactive User",
+    "duplicate_error": "Duplicate data",
+    "not_exists_error": "Not Exists",
+    "access_denied": "Access denied",
+    "connection_failed_error": "Please check your connection or credentials.",
+    "passwords_not_identical_error": "Password and Confirm Password not matched!"
+  }
+}

@@ -3,49 +3,34 @@
     <div class="col-md-6 m-auto">
       <div class="card card-body">
         <h1 class="text-center mb-3">
-          <i class="fas fa-user-plus"></i> রেজিস্ট্রেশন
+          <i class="fa-regular fa-user"></i> <%= getTranslation(title) %>
         </h1>
-        <% include ./partials/messages %>
-        <form action="/users/register" method="POST">
-          <div class="form-group">
-            <label for="name">ব্যবহারকারীর নাম</label>
-            <input
-              type="name"
-              id="name"
-              name="name"
-              class="form-control"
-              placeholder="নাম লিখুন"
-              value="<%= typeof name != 'undefined' ? name : '' %>"
-            />
+        <%- include('./partials/alerts'); -%>
+        <form id="register-form" action="/auth/register?lang=<%= lang %>" method="POST">
+          <div class="mb-3">
+            <label for="username" class="form-label"><%= getTranslation("user.username") %></label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="<%=
+            getTranslation("placeholder.username") %>" autocomplete="off" />
           </div>
-          <div class="form-group">
-            <label for="password">পাসওয়ার্ড</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              class="form-control"
-              placeholder="নতুন পাসওয়ার্ড লিখুন"
-              value="<%= typeof password != 'undefined' ? password : '' %>"
-            />
+          <div class="mb-3">
+            <label for="password" class="form-label"><%= getTranslation("user.password") %></label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="<%=
+            getTranslation("placeholder.password") %>" autocomplete="off" />
           </div>
-          <div class="form-group">
-            <label for="password2">সু্নিশ্চিত পাসওয়ার্ড</label>
-            <input
-              type="password"
-              id="password2"
-              name="password2"
-              class="form-control"
-              placeholder="সু্নিশ্চিত পাসওয়ার্ড লিখুন"
-              value="<%= typeof password2 != 'undefined' ? password2 : '' %>"
-            />
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label"><%= getTranslation("user.confirm_password") %></label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="<%=
+            getTranslation("placeholder.confirm_password") %>" autocomplete="off" />
           </div>
-          <button type="submit" class="btn btn-primary btn-block">
-            রেজিস্ট্রেশন করুন
+          <button id="register-btn" type="submit" class="btn btn-primary btn-block">
+            <%= getTranslation("button.submit") %>
+
+            <span id="register-btn-spinner"> </span>
           </button>
         </form>
         <p class="lead mt-4">
-          একাউন্ট খোলা আছে? <a href="/users/login">লগইন</a>
+          <%= getTranslation("lead.login") %>
+          <a href="/auth/login?lang=<%= lang %>"><%= getTranslation("user.login") %></a>
         </p>
       </div>
     </div>

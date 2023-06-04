@@ -1,0 +1,37 @@
+<%- include('./indexNavbar'); -%>
+<div class="container-fluid">
+  <div class="row">
+    <div hidden id="current-username"><%= username %></div>
+    <main role="main" class="col-md-9 mr-sm-auto col-lg-10 px-md-4 main-section">
+      <div class="d-flex flex-column h-100 justify-content-between bg-light">
+        <div class="p-2 message-box">
+          <a href="javascript:" id="jump-to-last"><i class="fas fa-chevron-up"></i></a>
+          <div id="loadmore" class="text-center">
+            <a href="javascript:">Load More</a>
+          </div>
+          <ul id="chat" class="message-list list-unstyled"></ul>
+        </div>
+
+        <div class="p-2">
+          <div id="messageForm" class="message_write fixed-bottom" style="position: relative">
+            <form id="messageBox" class="input-group">
+              <textarea data-expandable style="height: 45px; max-height: 38vh; resize: none" id="message" class="form-control" placeholder="Type your message..." autofocus></textarea>
+              <button class="btn btn-primary" id="sendButton"><i class="fas fa-paper-plane"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+
+
+    <%- include('./indexSidebar'); -%>
+  </div>
+</div>
+
+<script src="/node_modules/socket.io/client-dist/socket.io.js" type="application/javascript"></script>
+
+<script src="/js/index/emojiButton.js" type="application/javascript"></script>
+<script src="/js/index/indexPageScript.js" type="application/javascript"></script>
+<script src="/js/index/socketScript.js" type="application/javascript"></script>

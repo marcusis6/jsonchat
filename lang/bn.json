@@ -1,0 +1,46 @@
+{
+  "home": "হোম",
+  "select_language": "ভাষা পরিবর্তন করুন",
+  "return_to_home": "হোমপেজে ফিরে যান",
+  "user": {
+    "register": "রেজিস্টার",
+    "login": "লগইন",
+    "username": "নাম",
+    "password": "পাসওয়ার্ড",
+    "confirm_password": "সু্নিশ্চিত পাসওয়ার্ড"
+  },
+  "alert_user": {
+    "login_failed": "লগইন করতে ব্যর্থ! নাম অথবা পাসওয়ার্ড ভুল হয়েছে।",
+    "reg_success": "রেজিস্টার সম্পন্ন হয়েছে আলহামদুলিল্লাহ! এখন অনুমোদনের জন্য এডমিনকে জানান"
+  },
+  "button": {
+    "submit": "নিবেদন",
+    "close": "বন্ধ",
+    "confirm": "নিশ্চিত"
+  },
+  "placeholder": {
+    "username": "নাম লিখুন",
+    "password": "পাসওয়ার্ড লিখুন",
+    "confirm_password": "সু্নিশ্চিত পাসওয়ার্ড লিখুন"
+  },
+  "lead": {
+    "register": "একাউন্ট খোলা হয়নি?",
+    "login": "একাউন্ট খোলা আছে?",
+    "not_found": "আপনি যে পৃষ্ঠাটি খুঁজছেন তা খুঁজে পাওয়া যায়নি।"
+  },
+  "client_error": {
+    "error": "ত্রুটি",
+    "forbidden": "৪০৩ নিষিদ্ধ",
+    "not_authorized": "আপনি এই দেখার অনুমতি পাচ্ছেন না",
+    "not_found": "৪০৪ পাওয়া যায়নি",
+    "invalid_error": "ভুল তথ্য",
+    "wrong_password": "ভুল পাসওয়ার্ড",
+    "invalid_credentials": "নাম অথবা পাসওয়ার্ড ভুল",
+    "inactive_user": "নিষ্ক্রিয় ব্যবহারকারী",
+    "duplicate_error": "এই নাম আগে থেকেই আছে!",
+    "not_exists_error": "বিদ্যমান নেই",
+    "access_denied": "এক্সেস ডিনাইড",
+    "connection_failed_error": "অনুগ্রহ করে আপনার কানেকশন, ইউজার নেইম অথবা পাসওয়ার্ড চেক করুন",
+    "passwords_not_identical_error": "পাসওয়ার্ড এবং সু্নিশ্চিত পাসওয়ার্ড মেলেনা"
+  }
+}
