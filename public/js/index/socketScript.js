@@ -155,10 +155,10 @@ socket.on("chatMessage", (message) => {
     }
   });
 
-  // If the message is sent by the current user, return and do not display it in the message box
-  if (isSentByCurrentUser) {
-    return;
-  }
+  // // If the message is sent by the current user, return and do not display it in the message box
+  // if (isSentByCurrentUser) {
+  //   return;
+  // }
 
   // Create a list item for the message
   const newMessage = document.createElement("li");
@@ -199,9 +199,6 @@ socket.on("chatMessage", (message) => {
   // Scroll to the bottom of the chat box
   chatBox.scrollTop = chatBox.scrollHeight;
 });
-
-// emit event for joining
-socket.emit("join");
 
 // Listen for "activeUsersList" event
 socket.on("activeUsersList", (activeUsers) => {

@@ -26,7 +26,7 @@ const chatHandler = (io: Server) => {
     }
 
     // Broadcast the chat message to all connected clients
-    io.emit("chatMessage", messageObject);
+    socket.broadcast.emit("chatMessage", messageObject);
   };
 
   // Return the handler function
