@@ -12,6 +12,8 @@ import socketService from "../services/socketService";
 import { Session } from "express-session";
 import { Server } from "socket.io";
 import { SessionUser } from "../dtos/UserDto";
+import logger from "../config/logger";
+const log = logger(__filename);
 
 /**
  * Get port from environment and store in Express.
@@ -75,7 +77,7 @@ server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
 
-console.log("Server is listening on port  " + port);
+log.info("Server is listening on port  " + port);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -113,11 +115,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case "EACCES":
-      console.error(bind + " requires elevated privileges");
+      log.error(bind + " requires elevated privileges");
       process.exit(1);
       break;
     case "EADDRINUSE":
-      console.error(bind + " is already in use");
+      log.error(bind + " is already in use");
       process.exit(1);
       break;
     default:

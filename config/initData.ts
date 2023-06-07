@@ -2,6 +2,8 @@ import { UserDto } from "../dtos/UserDto";
 import { User } from "../models/User";
 import getRepository from "./config";
 import crypto from "crypto";
+import logger from "../config/logger";
+const log = logger(__filename);
 
 const insertDummyAdminUser = async (): Promise<void> => {
   try {
@@ -10,7 +12,7 @@ const insertDummyAdminUser = async (): Promise<void> => {
 
     if (user.length > 0) return; // admin id already exists
 
-    console.log("creating admin user!");
+    log.info("creating admin user!");
 
     // creating dto instance because password hash function is not available at model
     const adminUserDto = new UserDto({ username: "admin", password: "admin" });
@@ -24,10 +26,10 @@ const insertDummyAdminUser = async (): Promise<void> => {
     adminUserModel.isSuperAdmin = true; // set isSuperAdmin
 
     const result = await getRepository().add(adminUserModel); // insert
-    console.log(result);
+    log.info(JSON.stringify(result));
   } catch (error) {
     // Handle the error here
-    console.error("Error occurred during dummy admin user creation:", error);
+    log.error("Error occurred during dummy admin user creation:", error);
   }
 };
 

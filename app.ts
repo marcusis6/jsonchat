@@ -28,7 +28,7 @@ const sessionMiddleware = session({
   // Forces a session that is "uninitialized" to be saved to the store
   saveUninitialized: true,
   // cookie
-  cookie: { maxAge: 1000 * 60 * 60 }, // one hour in mili-seconds.
+  cookie: { maxAge: 3 * (1000 * 60 * 60) }, // three hour in mili-seconds.
 });
 
 // Session Setup

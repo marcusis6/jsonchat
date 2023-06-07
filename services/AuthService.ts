@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import { ClientError } from "../models/ClientError";
 import { UserDto } from "../dtos/UserDto";
-import logger from "../config/logger";
 import * as userCrudService from "../services/UserCrudService";
 import { UserDtoWithoutPassword } from "../dtos/UserDtoWithoutPassword";
 import { User } from "../models/User";
+import logger from "../config/logger";
 const log = logger(__filename);
 
 const login = async (user: UserDto): Promise<UserDto> => {
