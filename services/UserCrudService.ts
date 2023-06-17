@@ -2,7 +2,7 @@ import { User } from "../models/User";
 import { ClientError } from "../models/ClientError";
 import { UserDto } from "../dtos/UserDto";
 import crypto from "crypto";
-import getRepository from "../config/config";
+import { getRepository } from "../config/config";
 import { UserDtoWithoutPassword } from "../dtos/UserDtoWithoutPassword";
 import logger from "../config/logger";
 const log = logger(__filename);
@@ -139,6 +139,44 @@ const setLangPreference = async (
   return true;
 };
 
+const changePassword = async (
+  userDto: UserDto
+): Promise<UserDtoWithoutPassword> => {
+  const user: User[] = await getUserByUserName(userDto.username);
+
+  if (user.length === 0) {
+    throw ClientError.notExistsError();
+  }
+
+  const updatedUser = user[0];
+  updatedUser.password = userDto.password;
+
+  const result: UserDtoWithoutPassword = new UserDtoWithoutPassword(
+    await getRepository().update(updatedUser)
+  );
+
+  return result;
+};
+
+const updateSoundPref = async (
+  userDto: UserDto
+): Promise<UserDtoWithoutPassword> => {
+  const user: User[] = await getUserByUserName(userDto.username);
+
+  if (user.length === 0) {
+    throw ClientError.notExistsError();
+  }
+
+  const updatedUser = user[0];
+  updatedUser.soundPref = userDto.soundPref;
+
+  const result: UserDtoWithoutPassword = new UserDtoWithoutPassword(
+    await getRepository().update(updatedUser)
+  );
+
+  return result;
+};
+
 /**
  * Ensures that the provided user is not a super admin.
  * If the user is a super admin, an error is thrown to prevent further execution.
@@ -163,4 +201,6 @@ export {
   suspendUser,
   unsuspendUser,
   setLangPreference,
+  changePassword,
+  updateSoundPref,
 };

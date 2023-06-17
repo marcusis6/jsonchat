@@ -5,37 +5,116 @@ https://github.com/twbs/examples/blob/main/starter/index.html
 
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= getTranslation(title) %></title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title><%= getTranslation(title) %></title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Font Awesome -->
+    <!-- https://fontawesome.com/docs/web/setup/host-yourself/webfonts#reference-font-awesome-in-your-project -->
+    <link
+      href="/node_modules/@fortawesome/fontawesome-free/css/fontawesome.css"
+      rel="stylesheet"
+    />
+    <link
+      href="/node_modules/@fortawesome/fontawesome-free/css/solid.css"
+      rel="stylesheet"
+    />
 
-  <!-- Font Awesome -->
-  <!-- https://fontawesome.com/docs/web/setup/host-yourself/webfonts#reference-font-awesome-in-your-project -->
-  <link href="/node_modules/@fortawesome/fontawesome-free/css/fontawesome.css" rel="stylesheet" />
-  <link href="/node_modules/@fortawesome/fontawesome-free/css/solid.css" rel="stylesheet" />
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  </head>
 
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="/css/style.css" type="text/css" />
-</head>
+  <body>
+    <%- include('./partials/confirmModal.ejs'); -%> <%-
+    include('./partials/alertModal.ejs'); -%>
+    <div id="alert-container" class="position-fixed bottom-0 end-0 p-3"></div>
 
-<body>
+    <%- body %>
 
-  <%- include('./partials/confirmModal.ejs'); -%>
-  <div id="alert-container" class="position-fixed bottom-0 end-0 p-3"></div>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-  <%- body %>
+    <!-- Custom Script -->
+    <script src="/js/mainScript.js" type="application/javascript"></script>
 
-  <!-- Bootstrap Bundle with Popper -->
-  <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- load the script for index page  -->
+    <script
+      src="/node_modules/socket.io/client-dist/socket.io.js"
+      type="application/javascript"
+    ></script>
 
-  <!-- Custom Script -->
-  <script src="/js/mainScript.js" type="application/javascript"></script>
+    <script
+      src="/js/index/emojiButton.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/indexPageScript.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/socketScript.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/messageActions.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/deleteMessage.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/editMessage.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/generateMessage.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/displayMessage.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/updateMessageContainer.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/index/soundControl.js"
+      type="application/javascript"
+    ></script>
 
-</body>
-
+    <!-- load the script for admin users management  -->
+    <script
+      src="/js/admin/makeAdminOrUser.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/admin/suspendUnsuspendUser.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/admin/deleteUser.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/admin/deleteChat.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/admin/downloadChat.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="/js/admin/changePassword.js"
+      type="application/javascript"
+    ></script>
+  </body>
 </html>

@@ -10,6 +10,7 @@ class UserDto extends BaseDto {
   isAdmin: boolean;
   createdDate: Date | undefined;
   isSuperAdmin: boolean;
+  soundPref = true;
 
   constructor(json: any) {
     super(json);
@@ -21,6 +22,7 @@ class UserDto extends BaseDto {
     this.active = json?.active || false;
     this.isAdmin = json?.isAdmin || false;
     this.isSuperAdmin = json.isSuperAdmin || false;
+    this.soundPref = json.soundPref === undefined ? true : json.soundPref;
   }
 
   isValid() {
@@ -53,19 +55,22 @@ class SessionUser {
   lang_pref: string;
   active: boolean;
   isAdmin: boolean;
+  soundPref: boolean;
 
   constructor(
     id: string,
     username: string,
     lang_pref: string,
     active: boolean,
-    isAdmin: boolean
+    isAdmin: boolean,
+    soundPref: boolean
   ) {
     this.id = id;
     this.username = username;
     this.lang_pref = lang_pref;
     this.active = active;
     this.isAdmin = isAdmin;
+    this.soundPref = soundPref;
   }
 }
 

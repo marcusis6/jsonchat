@@ -28,7 +28,13 @@ const handleSuspendUnsuspendButtonClick = async (event) => {
 
     if (response.ok) {
       // eslint-disable-next-line no-undef
-      showAlert("Success", "success"); // defined in mainScript.js
+      showAlertModal(
+        "Success",
+        "User modified successfully",
+        "success",
+        true,
+        3000
+      );
       const updatedUser = await response.json();
 
       button.innerHTML = `<i class="fas fa-user${
@@ -78,8 +84,8 @@ const handleSuspendUnsuspendButtonClick = async (event) => {
       }
     } else {
       const errorData = await response.json();
-      // eslint-disable-next-line no-undef
-      showAlert(errorData.errorMessage, "danger"); // defined in mainScript.js
+      console.log(errorData.errorMessage);
+      showAlertModal("Error", "Failed to modify user", "danger", true, 5000);
     }
   } catch (error) {
     console.error("An error occurred:", error);

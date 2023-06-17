@@ -70,6 +70,15 @@ io.use((socket, next) => {
 socketService(io);
 
 /**
+ * Handling logout
+ * https://socket.io/how-to/use-with-express-session
+ * @param sessionId
+ */
+const destroySocketSession = (sessionId: any): void => {
+  io.in(sessionId).disconnectSockets();
+};
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 
@@ -136,3 +145,5 @@ function onListening() {
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr?.port;
   debug("Listening on " + bind);
 }
+
+export { destroySocketSession };

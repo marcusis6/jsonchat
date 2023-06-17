@@ -1,14 +1,4 @@
-const handleUserDeleteButtonClick = (event) => {
-  const deleteButton = event.target;
-  const userRow = deleteButton.closest("tr");
-  const userId = deleteButton.dataset.userId;
-
-  openConfirmModal(() => {
-    handleUserConfirmDelete(userId, userRow);
-  });
-};
-
-const handleUserConfirmDelete = async (userId, userRow) => {
+const handleConfirmDeleteChat = async () => {
   // Disable all buttons temporarily
   disableButtons();
 
@@ -19,8 +9,8 @@ const handleUserConfirmDelete = async (userId, userRow) => {
     // Perform the request after a delay of 1000 milliseconds
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const response = await fetch(`/api/users/${userId}`, {
-      method: "DELETE",
+    const response = await fetch(`/api/chat/all/delete`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -30,18 +20,21 @@ const handleUserConfirmDelete = async (userId, userRow) => {
       // Show success alert
       showAlertModal(
         "Success",
-        "User deleted successfully",
+        "All messages deleted successfully",
         "success",
         true,
         3000
       );
-
-      // Remove the deleted user item from the DOM
-      userRow.remove();
     } else {
       const errorData = await response.json();
       console.log(errorData.errorMessage);
-      showAlertModal("Error", "Failed to delete user", "danger", true, 5000);
+      showAlertModal(
+        "Error",
+        "Failed to delete messages",
+        "danger",
+        true,
+        5000
+      );
     }
   } catch (error) {
     console.error("An error occurred:", error);
@@ -54,7 +47,11 @@ const handleUserConfirmDelete = async (userId, userRow) => {
   }
 };
 
-const deleteButtons = document.querySelectorAll(".delete-user-button");
-deleteButtons.forEach((button) => {
-  button.addEventListener("click", handleUserDeleteButtonClick);
+const deleteButton = document.getElementById("delete-chat");
+deleteButton.addEventListener("click", async (event) => {
+  const deleteButton = event.target;
+
+  openConfirmModal(() => {
+    handleConfirmDeleteChat();
+  });
 });

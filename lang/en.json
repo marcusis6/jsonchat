@@ -4,6 +4,7 @@
   "select_language": "Select Language",
   "user": {
     "register": "Register",
+    "change_password": "Change Password",
     "login": "Log In",
     "username": "Username",
     "password": "Password",
@@ -11,7 +12,9 @@
   },
   "alert_user": {
     "reg_success": "You have been registered successfully. Please contact admin to active your account",
-    "login_failed": "Failed to login! Incorrect username or password"
+    "login_failed": "Failed to login! Incorrect username or password",
+    "logout_success": "You have been logged out. Please logged in again",
+    "change_password_success": "Your password has been changed successfully"
   },
   "button": {
     "submit": "Submit",

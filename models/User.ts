@@ -7,7 +7,8 @@ class User extends BaseModel {
   lang_pref: string;
   isAdmin: boolean;
   createdDate: Date;
-  isSuperAdmin: boolean; 
+  isSuperAdmin: boolean;
+  soundPref = true;
 
   constructor(json: any = {}) {
     super(json);
@@ -17,6 +18,7 @@ class User extends BaseModel {
     this.lang_pref = json.lang_pref || "en";
     this.isAdmin = json.isAdmin || false;
     this.isSuperAdmin = json.isSuperAdmin || false;
+    this.soundPref = json.sound_pref;
 
     // Initialize createdDate from server (current date and time)
     this.createdDate = new Date();

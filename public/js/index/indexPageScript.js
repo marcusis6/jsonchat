@@ -61,6 +61,7 @@ const picker = new EmojiButton({ zIndex: 100000 });
 picker.on("emoji", (emoji) => {
   document.querySelector("textarea#message").value += emoji;
 });
-button.addEventListener("click", () => {
+button.addEventListener("click", (event) => {
+  event.preventDefault(); // Prevent
   picker.togglePicker(button);
 });

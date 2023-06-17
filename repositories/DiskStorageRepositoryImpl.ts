@@ -76,4 +76,9 @@ export class DiskStorageRepositoryImpl<T> implements StorageRepository<T> {
 
     return false;
   };
+
+  removeAll = async (): Promise<void> => {
+    this.items = []; // clear all items
+    this.saveToFile(); // save
+  };
 }

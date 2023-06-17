@@ -428,3 +428,145 @@ a:hover {
   font-weight: bold;
   margin-right: 5px;
 }
+
+/* Apply custom styles to the message content */
+.message-content, .message-content > p {
+  display: block;
+  display: inline;
+}
+
+@keyframes flicker {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: #ffff99; /* Adjust the background color as desired */
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.flickering-messages {
+  animation: flicker 1s infinite;
+}
+
+.dropdown {
+  display: inline;
+  float: right;
+}
+
+.dropdown-toggle::after {
+  content: none;
+}
+
+body {
+  margin: 0;
+  font-family: var(--bs-body-font-family);
+  font-size: var(--bs-body-font-size);
+  font-weight: var(--bs-body-font-weight);
+  line-height: var(--bs-body-line-height);
+  color: var(--bs-body-color);
+  text-align: var(--bs-body-text-align);
+  background-color: var(--bs-body-bg);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modal-dialog-bottom-right {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  margin: 0;
+}
+
+.modal.fade .modal-dialog.modal-dialog-bottom-right {
+  transform: translate(25%, 125%);
+}
+
+.modal.fade.show .modal-dialog.modal-dialog-bottom-right {
+  transform: translate(0, 0);
+}
+
+
+#jump-to-last {
+  position: absolute;
+  bottom: 210px;
+  right: 90px;
+  background: #000;
+  background: rgba(0, 0, 0, 0.7);
+  width: 50px;
+  height: 50px;
+  display: block;
+  text-decoration: none;
+  -webkit-border-radius: 35px;
+  -moz-border-radius: 35px;
+  border-radius: 35px;
+  display: none;
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+#jump-to-last i {
+  color: #fff;
+  margin: 0;
+  position: relative;
+  left: 16px;
+  top: 13px;
+  font-size: 19px;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+#jump-to-last:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+#jump-to-last:hover i {
+  color: #fff;
+  top: 5px;
+}
+
+.edit-mode:focus {
+  outline: none; /* Remove the default focus outline */
+  box-shadow: none; /* Remove the default focus box shadow */
+  background-color: #FEEFB3; /* Light yellow */
+  border: 1px solid #FDBA74; /* Light orange */
+}
+
+
+#container1 {
+  position: relative;
+}
+
+#reply-container {
+	top: -44px;
+	left: 0;
+	width: 100%;
+	background-color: #e8f0fe;
+	border-radius: 8px;
+	padding: 8px;
+	display: block;
+}
+
+#reply-message {
+  display: flex;
+  align-items: center;
+}
+
+#reply-text {
+  margin-right: 8px; /* Adjust the margin as per your design */
+}
+
+#cancel-reply {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #888; /* Adjust the color as per your design */
+}

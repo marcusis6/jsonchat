@@ -27,6 +27,6 @@ router.get(
 
 router.post("/login", redirectAuthenticatedUsers, authController.login);
 
-router.post("/logout", authController.logout);
+router.get("/logout", authController.logout);
 
 export = router;

@@ -4,6 +4,7 @@ import { ClientError } from "../models/ClientError";
 import * as authService from "../services/AuthService";
 import { renderPageOrRedirect } from "../utils/ejsHelpers";
 import { SessionUser, UserDto } from "../dtos/UserDto";
+import { destroySocketSession } from "../bin/www";
 const log = logger(__filename);
 
 const login = async (req: Request, res: Response): Promise<void> => {
@@ -53,9 +54,14 @@ const logout = async (req: Request, res: Response): Promise<any> => {
     return res.sendStatus(403);
   else {
     try {
+      // first destroy socket session
+      destroySocketSession(req.session.id);
+      // now destroy express session
       await destroySession(req);
-      res.status(200).json({
-        message: "Logout Successful",
+
+      return renderPageOrRedirect(res, "login", {
+        title: "user.login",
+        successMessage: "alert_user.logout_success",
       });
     } catch (error) {
       let message = "";
@@ -79,7 +85,8 @@ const setSession = async (req: Request, user: UserDto): Promise<void> => {
     user.username,
     user.lang_pref,
     user.active,
-    user.isAdmin
+    user.isAdmin,
+    user.soundPref
   );
 
   log.debug(`login sessionId: ${req.sessionID}`);

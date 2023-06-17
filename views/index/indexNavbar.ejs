@@ -1,23 +1,99 @@
 <nav class="navbar navbar-light sticky-top bg-light flex-md-nowrap p-0 shadow">
-  <a class="admin-panel text-center btn p-2 m-1 ml-5 col-sm-2 col-md-2 col-lg-2 text-left btn-outline-success" type="button" href="/api/admin">
-    এডমিন প্যানেল
+  <!-- Example: index.ejs -->
+  <a
+    class="admin-panel text-center btn p-2 m-1 ml-5 col-sm-2 col-md-2 col-lg-2 text-left btn-outline-success"
+    type="button"
+    href="/api/admin"
+  >
+    <i class="fas fa-cogs mr-2"></i> এডমিন প্যানেল
   </a>
-  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+
+  <button
+    class="navbar-toggler position-absolute d-md-none collapsed"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#sidebarMenu"
+    aria-controls="sidebarMenu"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <ul class="navbar-nav px-3 noticeSection col-lg-6 col-md-4 col-sm-12">
     <li id="noticeBoard" class="nav-item text-nowrap"></li>
   </ul>
-  <form class="form-inline my-2 my-lg-0">
-    <i aria-hidden="true" class="fa fa-volume-up my-2 my-sm-0 mr-2 ml-2 sound-control"></i>
-    <a class="btn btn-outline-success my-2 my-sm-0 mr-2" href="/password">
-      চেঞ্জ পাসওয়ার্ড
-    </a>
-    <button class="logout btn btn-outline-success my-2 my-sm-0 mr-2" type="button">
-      লগ আউট
-    </button>
+  <!-- Example: index.ejs -->
+  <form class="form-inline d-flex justify-content-end">
+    <!-- Button group for Volume, Change Password, and Logout buttons -->
+    <div class="btn-group" role="group">
+      <!-- Language selector with globe icon -->
+      <div class="btn-group mr-2">
+        <button
+          type="button"
+          class="btn btn-outline-success dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <i class="fas fa-globe"></i> <span id="selectedLanguage">বাংলা</span>
+        </button>
+        <div class="dropdown-menu" id="languageDropdown">
+          <!-- Dropdown items -->
+          <a class="dropdown-item" href="#" onclick="selectLanguage('বাংলা')">
+            বাংলা
+          </a>
+          <a class="dropdown-item" href="#" onclick="selectLanguage('English')">
+            English
+          </a>
+          <!-- Add more language options as needed -->
+        </div>
+      </div>
+
+      <!-- Volume icon -->
+      <button id="volume-btn" class="btn btn-outline-success">
+        <i aria-hidden="true" class="fas fa-volume-up sound-control"></i>
+      </button>
+
+      <!-- Change Password button with key icon -->
+      <a class="btn btn-outline-success" href="/api/changePassword">
+        <i class="fas fa-key"></i>চেঞ্জ পাসওয়ার্ড
+      </a>
+
+      <!-- Logout button with sign-out icon -->
+      <a href="/auth/logout" class="btn btn-outline-success" type="button">
+        <i class="fas fa-sign-out-alt"></i>লগ আউট
+      </a>
+    </div>
   </form>
+
+  <!-- Initialize the Bootstrap dropdown component -->
+  <script>
+    function selectLanguage(language) {
+      document.getElementById("selectedLanguage").textContent = language;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      var languageDropdownToggle = document.getElementById(
+        "languageDropdownToggle"
+      );
+      var languageDropdown = document.getElementById("languageDropdown");
+
+      languageDropdownToggle.addEventListener("click", function () {
+        languageDropdown.classList.toggle("show");
+      });
+
+      window.addEventListener("click", function (event) {
+        if (
+          !event.target.matches("#languageDropdownToggle") &&
+          !event.target.matches("#languageDropdown") &&
+          !event.target.matches(".dropdown-item")
+        ) {
+          languageDropdown.classList.remove("show");
+        }
+      });
+    });
+  </script>
 </nav>
 
 <div class="toggle">

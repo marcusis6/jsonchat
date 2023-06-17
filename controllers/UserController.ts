@@ -33,7 +33,9 @@ const addUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const getUsers = async (req: Request, res: Response): Promise<void> => {
+const getUsers = async (req: Request, res: Response): Promise<any> => {
+  if (!req.session?.userInfo?.isAdmin) return res.sendStatus(403);
+
   log.debug("Getting users...");
 
   try {
@@ -59,7 +61,9 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const removeUser = async (req: Request, res: Response): Promise<void> => {
+const removeUser = async (req: Request, res: Response): Promise<any> => {
+  if (!req.session?.userInfo?.isAdmin) return res.sendStatus(403);
+
   log.debug("Removing user...");
   const userId: string = req.params.id;
 
@@ -73,7 +77,9 @@ const removeUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const makeUserAdmin = async (req: Request, res: Response): Promise<void> => {
+const makeUserAdmin = async (req: Request, res: Response): Promise<any> => {
+  if (!req.session?.userInfo?.isAdmin) return res.sendStatus(403);
+
   log.debug("Making user admin...");
   const userId: string = req.params.id;
 
@@ -87,7 +93,9 @@ const makeUserAdmin = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const makeUserRegular = async (req: Request, res: Response): Promise<void> => {
+const makeUserRegular = async (req: Request, res: Response): Promise<any> => {
+  if (!req.session?.userInfo?.isAdmin) return res.sendStatus(403);
+
   log.debug("Making user regular...");
   const userId: string = req.params.id;
 
@@ -101,7 +109,9 @@ const makeUserRegular = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const suspendUser = async (req: Request, res: Response): Promise<void> => {
+const suspendUser = async (req: Request, res: Response): Promise<any> => {
+  if (!req.session?.userInfo?.isAdmin) return res.sendStatus(403);
+
   log.debug("Suspending user...");
   const userId: string = req.params.id;
 
@@ -115,7 +125,9 @@ const suspendUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const unsuspendUser = async (req: Request, res: Response): Promise<void> => {
+const unsuspendUser = async (req: Request, res: Response): Promise<any> => {
+  if (!req.session?.userInfo?.isAdmin) return res.sendStatus(403);
+
   log.debug("Unsuspending user...");
   const userId: string = req.params.id;
 
@@ -124,6 +136,50 @@ const unsuspendUser = async (req: Request, res: Response): Promise<void> => {
     const updateUser = await userCrudService.unsuspendUser(userId);
     log.debug("User unsuspended successfully.");
     res.status(200).json(updateUser);
+  } catch (error) {
+    handleError(error, res);
+  }
+};
+
+const changePassword = async (req: Request, res: Response): Promise<any> => {
+  if (!req.session?.userInfo) res.render("forbidden", { title: "forbidden" });
+
+  try {
+    const userDto = new UserDto(req.body);
+
+    if (!userDto?.password?.trim() || !userDto?.confirmPassword.trim())
+      throw ClientError.invalidError();
+
+    if (userDto?.password?.trim() != userDto?.confirmPassword.trim())
+      throw ClientError.invalidError();
+
+    userDto.username = req.session?.userInfo?.username;
+    userDto.password = userDto.getPasswordHash();
+
+    const updatedUser = await userCrudService.changePassword(userDto);
+
+    log.debug("Password updated successfully.");
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    handleError(error, res);
+  }
+};
+
+const updateSoundPref = async (req: Request, res: Response): Promise<any> => {
+  if (!req.session?.userInfo) res.render("forbidden", { title: "forbidden" });
+
+  try {
+    const userDto = new UserDto(req.body);
+
+    userDto.username = req.session?.userInfo?.username;
+
+    const updatedUser = await userCrudService.updateSoundPref(userDto);
+
+    // update the soundPref to session
+    req.session.userInfo.soundPref = updatedUser.soundPref;
+
+    log.debug("SoundPref updated successfully.");
+    res.status(200).json(updatedUser);
   } catch (error) {
     handleError(error, res);
   }
@@ -154,4 +210,6 @@ export {
   makeUserRegular,
   suspendUser,
   unsuspendUser,
+  changePassword,
+  updateSoundPref,
 };

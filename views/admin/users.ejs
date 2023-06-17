@@ -22,7 +22,9 @@
       <tr class="<%= user.active ? '' : 'suspended-user' %>">
         <td><%= user.username %></td>
         <td>
-          <span class="badge <%= user.isAdmin ? 'bg-primary' : 'bg-secondary' %>">
+          <span
+            class="badge <%= user.isAdmin ? 'bg-primary' : 'bg-secondary' %>"
+          >
             <%= user.isAdmin ? 'Admin' : 'User' %>
           </span>
           <% if (user.isSuperAdmin) { %>
@@ -43,23 +45,43 @@
         <td>
           <div class="btn-group">
             <% if (!user.isAdmin && !user.isSuperAdmin) { %>
-            <button type="button" class="btn btn-primary btn-sm make-admin-button" data-user-id="<%= user.id %>">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm make-admin-button"
+              data-user-id="<%= user.id %>"
+            >
               <i class="fas fa-user-shield"></i> Make Admin
             </button>
             <% } else if (user.isAdmin && !user.isSuperAdmin) { %>
-            <button type="button" class="btn btn-secondary btn-sm make-user-button" data-user-id="<%= user.id %>">
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm make-user-button"
+              data-user-id="<%= user.id %>"
+            >
               <i class="fas fa-user"></i> Make User
             </button>
             <% } %> <% if (user.active && !user.isSuperAdmin) { %>
-            <button type="button" class="btn btn-warning btn-sm suspend-user-button" data-user-id="<%= user.id %>">
+            <button
+              type="button"
+              class="btn btn-warning btn-sm suspend-user-button"
+              data-user-id="<%= user.id %>"
+            >
               <i class="fas fa-user-slash"></i> Suspend User
             </button>
             <% } else if (!user.active && !user.isSuperAdmin) { %>
-            <button type="button" class="btn btn-success btn-sm unsuspend-user-button" data-user-id="<%= user.id %>">
+            <button
+              type="button"
+              class="btn btn-success btn-sm unsuspend-user-button"
+              data-user-id="<%= user.id %>"
+            >
               <i class="fas fa-user-check"></i> Unsuspend User
             </button>
             <% } %> <% if (!user.isSuperAdmin) { %>
-            <button type="button" class="btn btn-danger btn-sm delete-user-button" data-user-id="<%= user.id %>">
+            <button
+              type="button"
+              class="btn btn-danger btn-sm delete-user-button"
+              data-user-id="<%= user.id %>"
+            >
               <i class="fas fa-trash"></i> Delete User
             </button>
             <% } %>
@@ -71,8 +93,3 @@
   </table>
   <% } %>
 </div>
-
-<!-- load the script after users HTML is loaded -->
-<script src="/js/admin/makeAdminOrUser.js" type="application/javascript"></script>
-<script src="/js/admin/suspendUnsuspendUser.js" type="application/javascript"></script>
-<script src="/js/admin/deleteUser.js" type="application/javascript"></script>

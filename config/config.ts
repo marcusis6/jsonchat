@@ -1,6 +1,7 @@
 import logger from "../config/logger";
 import { StorageRepository } from "../interfaces/StorageRepository";
 import { ClientError } from "../models/ClientError";
+import { Message } from "../models/Message";
 import { User } from "../models/User";
 import { DiskStorageRepositoryImpl } from "../repositories/DiskStorageRepositoryImpl";
 import { PtStorageRepositoryImpl } from "../repositories/PtStorageRepositoryImpl";
@@ -11,7 +12,7 @@ let repository: StorageRepository<User> | null = null;
 // singeleton idea:
 // https://stackoverflow.com/questions/1479319/simplest-cleanest-way-to-implement-a-singleton-in-javascript
 
-export default function getRepository(): StorageRepository<User> {
+function getRepository(): StorageRepository<User> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
   if (!repository) {
@@ -51,3 +52,29 @@ export default function getRepository(): StorageRepository<User> {
 
   return repository;
 }
+
+/* 
+TO:DO: This should be merged with getRepository but it's taking time to implement 
+now. Plan to implement after MVP inshaAllah 
+note: by default chatRepository is using DiskStorage
+*/
+let chatRepository: StorageRepository<Message> | null = null;
+function getChatRepository(): StorageRepository<Message> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+  if (!chatRepository) {
+    log.info("initializing repository");
+
+    try {
+      chatRepository = new DiskStorageRepositoryImpl<Message>("Message");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      log.error(`Error creating chatRepository: ${error.message}`);
+      throw error;
+    }
+  }
+
+  return chatRepository;
+}
+
+export { getRepository, getChatRepository };

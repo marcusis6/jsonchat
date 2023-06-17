@@ -10,209 +10,120 @@ const currentUsername = document.getElementById("current-username").textContent;
 
 const messageInput = document.getElementById("message");
 
-messageInput.addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    sendMessage();
-    event.preventDefault(); // Prevent the newline character from being inserted in the textarea
+messageInput.addEventListener("keypress", async (event) => {
+  if (event.which == 13 && !event.shiftKey && messageInput.value.trim() != "") {
+    if (messageInput.classList.contains("edit-mode")) {
+      const id = messageInput.getAttribute("sequence-id");
+
+      await editMessage(id);
+
+      event.preventDefault(); // Prevent the newline character from being inserted in the textarea
+    } else if (messageInput.classList.contains("reply-mode")) {
+      const id = messageInput.getAttribute("sequence-id");
+
+      replyMessage(id);
+
+      event.preventDefault(); // Prevent the newline character from being inserted in the textarea
+    } else {
+      sendMessage(messageInput.value); // Send
+      event.preventDefault(); // Prevent the newline character from being inserted in the textarea
+    }
   }
 });
 
-function sendMessage() {
-  const message = messageInput.value;
+function sendMessage(message) {
+  const newMessage = displayMessage(
+    {
+      text: message,
+      username: currentUsername,
+      id: "", // later sequence id  will come from server response
+    },
+    true // loading
+  );
 
-  // Show loading spinner with "Sending..." status
-  const newMessage = displayMessageStatus(message, "Sending...");
-
-  // Get the spinner element within the new message
-  const spinnerElement = newMessage.querySelector(".fa-spinner");
+  scrollToLastMessage();
 
   // Emit the chatMessage event to the server with the message and message ID and timeout
   socket
-    .timeout(5000)
+    .timeout(15000)
     .emit("chatMessage", { text: message }, (err, response) => {
       if (err) {
         // Handle the case where the server did not acknowledge the event
         console.error("Error:", err);
 
         // Display "Message Sent Failed" status for the message
-        updateMessageStatus(newMessage, message, "Message Sent Failed");
-
-        // Stop the loading spinner
-        stopLoadingSpinner(spinnerElement);
+        updateMessage(newMessage, "", false);
       } else {
         const updatedMessage = JSON.parse(response);
 
-        receivedMessages.push(updatedMessage);
+        if (assertMessageSequence(updatedMessage)) {
+          receivedMessages.push(updatedMessage);
 
-        console.log("Acknowledgement received:", updatedMessage);
+          console.log("Acknowledgement received:", updatedMessage);
 
-        // Display check mark for successful message sending
-        updateMessageStatus(newMessage, updatedMessage, "✓");
-
-        // Stop the loading spinner
-        stopLoadingSpinner(spinnerElement);
+          // Display check mark for successful message sending
+          updateMessage(newMessage, updatedMessage.id, true);
+        }
       }
     });
 
   messageInput.value = "";
 }
-
-// Function to display message status
-function displayMessageStatus(message, status) {
-  const chatBox = document.getElementById("chat");
-  const newMessage = document.createElement("li");
-
-  newMessage.classList.add("message");
-
-  const messageContent = document.createElement("div");
-  messageContent.classList.add("message-content");
-  messageContent.textContent = message;
-
-  // Create a username element
-  const usernameElement = document.createElement("span");
-  usernameElement.classList.add("username");
-  usernameElement.textContent = currentUsername;
-
-  // Add username before message content
-  newMessage.appendChild(usernameElement);
-
-  // Create a loading spinner element
-  const spinnerElement = document.createElement("i");
-  spinnerElement.classList.add("fas", "fa-spinner", "fa-spin");
-
-  // Create the status element
-  const statusElement = document.createElement("span");
-  statusElement.classList.add("status");
-  statusElement.textContent = status;
-
-  // Append the spinner element and status element to the new message
-  newMessage.appendChild(messageContent);
-  newMessage.appendChild(spinnerElement);
-  newMessage.appendChild(statusElement);
-
-  chatBox.appendChild(newMessage);
-
-  return newMessage;
-}
-
-// Function to update message status and add me
-function updateMessageStatus(messageElement, message, status) {
-  const messageContent = messageElement.querySelector(".message-content");
-  if (message.sequence_id) {
-    messageContent.id = message.sequence_id;
-  }
-
-  const statusElement = messageElement.querySelector(".status");
-  if (statusElement) {
-    statusElement.textContent = status;
-  }
-
-  const failedStatusElement = messageElement.querySelector(".failed-status");
-  if (failedStatusElement && status !== "Message Sent Failed") {
-    messageElement.removeChild(failedStatusElement);
-  }
-}
-
-// Function to stop the loading spinner
-function stopLoadingSpinner(spinnerElement) {
-  if (spinnerElement && spinnerElement.parentNode) {
-    spinnerElement.parentNode.removeChild(spinnerElement);
-  }
-}
-
 // Listen for chatMessage events from the server
 socket.on("chatMessage", async (message) => {
-  const messageIndex = receivedMessages.length;
-
-  if (messageIndex > 0) {
-    const previousSequenceId = receivedMessages[messageIndex - 1].sequence_id;
-    const expectedSequenceId = previousSequenceId + 1;
-
-    if (expectedSequenceId !== message.sequence_id) {
-      await requestMissingMessages(expectedSequenceId);
-    } else {
-      receivedMessages.push(message);
-      displayMessage(message);
-    }
+  // Play or pause audio based on sound preference
+  if (isSoundOn) {
+    audio.play();
   } else {
+    audio.pause();
+  }
+  if (assertMessageSequence(message)) {
     receivedMessages.push(message);
     displayMessage(message);
+    scrollToLastMessage();
   }
 });
 
-// Function to request missing messages from the server
-const requestMissingMessages = async (sequence_id) => {
-  // Emit 'requestMissingMessages' event to the server with the missing sequence IDs
-  socket.emit(
-    "requestMissingMessages",
-    sequence_id,
-    (receivedMissingMessages) => {
-      console.log(JSON.parse(receivedMissingMessages));
-      // Add the missing messages to the received messages array
-      receivedMessages.push(...JSON.parse(receivedMissingMessages));
+// Function to assert message sequence are aligned correctly
+// If not aligned correctly requestMissingMessages will be called
+const assertMessageSequence = async (message) => {
+  const messageIndex = receivedMessages.length;
 
-      // Sort the received messages based on sequence number
-      receivedMessages.sort((a, b) => a.sequence_id - b.sequence_id);
+  if (messageIndex > 0) {
+    const previousSequenceId = parseInt(receivedMessages[messageIndex - 1].id);
+    const expectedSequenceId = previousSequenceId + 1;
 
-      // Display all the received messages in order
-      displayMessages();
+    if (expectedSequenceId !== parseInt(message.id)) {
+      await requestMissingMessages(expectedSequenceId);
+    } else {
+      return true;
     }
-  );
-};
-
-// Function to display the messages on the frontend
-const displayMessages = () => {
-  const chatBox = document.getElementById("chat");
-  chatBox.innerHTML = ""; // before displaying all message clear the previous messages
-  for (const message of receivedMessages) {
-    displayMessage(message);
-  }
-};
-
-// Function to display a single message on the frontend
-const displayMessage = (message) => {
-  // Check if the message is sent by the current user
-  const isSentByCurrentUser = message.sender === socket.id;
-
-  // Find the existing message with the same message ID but with "Message Sent Failed" status
-  // Remove any existing message with the same message ID and failed status
-  const chatBox = document.getElementById("chat");
-
-  // Create a list item for the message
-  const newMessage = document.createElement("li");
-  newMessage.classList.add("message");
-
-  // Create a message container
-  const messageContainer = document.createElement("div");
-  messageContainer.classList.add("message-container");
-
-  // Create a username element
-  const usernameElement = document.createElement("span");
-  usernameElement.classList.add("username");
-  usernameElement.textContent = message.username;
-
-  // Create a message content element
-  const messageContent = document.createElement("div");
-  messageContent.classList.add("message-content");
-  messageContent.textContent = message.text; // Update to access the text property
-  messageContent.id = message.sequence_id; // Set the message ID
-
-  // Append the username and message content to the container
-  messageContainer.appendChild(usernameElement);
-  messageContainer.appendChild(messageContent);
-
-  // Add appropriate classes based on the sender of the message
-  if (isSentByCurrentUser) {
-    newMessage.classList.add("sent");
   } else {
-    newMessage.classList.add("received");
+    return true;
   }
+};
 
-  // Append the message container to the message
-  newMessage.appendChild(messageContainer);
+// Function to request missing messages from the server
+const requestMissingMessages = async (id) => {
+  // Emit 'requestMissingMessages' event to the server with the missing sequence IDs
+  socket
+    .timeout(15000)
+    .emit("requestMissingMessages", id, (err, receivedMissingMessages) => {
+      if (err) {
+        // Handle the case where the server did not acknowledge the event
+        console.error("Error:", err);
+      } else {
+        console.log(JSON.parse(receivedMissingMessages));
+        // Add the missing messages to the received messages array
+        receivedMessages.push(...JSON.parse(receivedMissingMessages));
 
-  // Append the message to the chat box
-  chatBox.appendChild(newMessage);
+        // Sort the received messages based on sequence number
+        receivedMessages.sort((a, b) => a.id - b.id);
+
+        // Display all the received messages in order
+        displayMessages(receivedMessages);
+      }
+    });
 };
 
 // Listen for "activeUsersList" event
@@ -232,3 +143,70 @@ function displayActiveUsers(users) {
     activeUserList.appendChild(listItem);
   });
 }
+
+// Emit 'InitialMessages' event to the server
+socket.timeout(15000).emit("InitialMessages", (err, response) => {
+  if (err) {
+    // Handle the case where the server did not acknowledge the event
+    console.error("Error:", err);
+  } else {
+    // Add the initial messages to the received messages array
+    receivedMessages.push(...JSON.parse(response));
+
+    // Sort the received messages based on sequence number
+    receivedMessages.sort((a, b) => a.id - b.id);
+
+    // Display all the received messages in order
+    displayMessages(receivedMessages);
+  }
+});
+
+const loadMoreButton = document.getElementById("loadMoreButton");
+const loadingSpinner = document.getElementById("loadingSpinner");
+const loadMoreText = document.getElementById("loadMoreText");
+
+// Function to show the loading spinner
+const showLoadingSpinner = () => {
+  loadingSpinner.style.display = "inline-block";
+  loadMoreText.style.display = "none";
+};
+
+// Function to hide the loading spinner
+const hideLoadingSpinner = () => {
+  loadingSpinner.style.display = "none";
+  loadMoreText.style.display = "inline-block";
+};
+
+// Function to load more messages from the server
+const loadMoreMessages = () => {
+  // Show the loading spinner
+  showLoadingSpinner();
+
+  // Send a request to the server to fetch more messages
+  socket
+    .timeout(15000)
+    .emit("loadMoreMessages", receivedMessages.length, 25, (err, response) => {
+      if (err) {
+        // Handle the case where the server did not acknowledge the event
+        console.error("Error:", err);
+      } else {
+        receivedMessages.unshift(...JSON.parse(response));
+        prependMessages(JSON.parse(response));
+      }
+
+      // Hide the loading spinner after messages arrive
+      hideLoadingSpinner();
+    });
+};
+
+// Event listener for the "Load More" button
+loadMoreButton.addEventListener("click", loadMoreMessages);
+
+// allow textarea to be expandable
+document.body.addEventListener("input", function (event) {
+  const textarea = event.target;
+  if (textarea.matches("textarea[data-expandable]")) {
+    textarea.style.removeProperty("height");
+    textarea.style.height = textarea.scrollHeight + 1 + "px";
+  }
+});

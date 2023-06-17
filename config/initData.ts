@@ -1,6 +1,6 @@
 import { UserDto } from "../dtos/UserDto";
 import { User } from "../models/User";
-import getRepository from "./config";
+import { getRepository } from "./config";
 import crypto from "crypto";
 import logger from "../config/logger";
 const log = logger(__filename);
