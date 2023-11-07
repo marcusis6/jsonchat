@@ -1,23 +1,10 @@
 import logger from "../config/logger";
 const log = logger(__filename);
-import { getChatRepository } from "../config/config";
 import path from "path";
 import fs from "fs";
 import { Response } from "express";
 import { ClientError } from "../models/ClientError";
 import { Readable } from "stream";
-
-// remove all messages from the json file
-const removeAll = async (): Promise<void> => {
-  log.debug("chat delete called");
-
-  // get the repository
-  const repository = getChatRepository();
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  await repository.removeAll();
-};
 
 // Download JSON file with filtered messages
 const downloadAll = async (res: Response): Promise<void> => {
@@ -37,10 +24,13 @@ const downloadAll = async (res: Response): Promise<void> => {
     // Filter the messages to include only the username and text
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const filteredMessages = messages.map(({ username, text }) => ({
-      username,
-      text,
-    }));
+    const filteredMessages = messages.map(({ username, text, time, replyTo }) => ({
+        username,
+        text,
+        time,
+        replyTo,
+      })
+    );
 
     // Convert the filtered messages to JSON string
     const filteredJson = JSON.stringify(filteredMessages, null, 2);
@@ -61,4 +51,4 @@ const downloadAll = async (res: Response): Promise<void> => {
   }
 };
 
-export { removeAll, downloadAll };
+export { downloadAll };

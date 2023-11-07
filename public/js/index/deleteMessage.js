@@ -4,9 +4,7 @@ socket.on("deletedMessage", async (id) => {
   await removeListItemById(id);
 
   // remove message from receivedMessages array
-  receivedMessages = receivedMessages.filter(
-    (item) => item.id !== parseInt(id)
-  );
+  receivedMessages = receivedMessages.filter((item) => item.id !== id);
 });
 
 const removeListItemById = async (id) => {
@@ -73,9 +71,7 @@ async function handleDeleteMessage(message) {
           message.remove();
 
           // Remove message from receivedMessages array
-          receivedMessages = receivedMessages.filter(
-            (item) => item.id !== parseInt(id)
-          );
+          receivedMessages = receivedMessages.filter((item) => item.id !== id);
         }
       });
 

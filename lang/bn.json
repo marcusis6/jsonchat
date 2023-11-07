@@ -8,7 +8,8 @@
     "login": "লগইন",
     "username": "নাম",
     "password": "পাসওয়ার্ড",
-    "confirm_password": "সু্নিশ্চিত পাসওয়ার্ড"
+    "confirm_password": "সু্নিশ্চিত পাসওয়ার্ড",
+    "new_password": "নতুন পাসওয়ার্ড"
   },
   "alert_user": {
     "login_failed": "লগইন করতে ব্যর্থ! নাম অথবা পাসওয়ার্ড ভুল হয়েছে।",

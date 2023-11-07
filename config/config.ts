@@ -13,28 +13,26 @@ let repository: StorageRepository<User> | null = null;
 // https://stackoverflow.com/questions/1479319/simplest-cleanest-way-to-implement-a-singleton-in-javascript
 
 function getRepository(): StorageRepository<User> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
   if (!repository) {
     const repositoryName = process.env.REPOSITORY_NAME || "ptStorage";
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const siteId = process.env.PT_SITE_ID!;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const sitePassword = process.env.PT_SITE_PASSWORD!;
     log.info("initializing repository");
 
     try {
       switch (repositoryName) {
-        case "ptStorage":
+        case "ptStorage": {
           log.info("Pt has been chosen as the default repository");
+          const siteId = process.env.PT_SITE_ID ?? "";
+          const sitePassword = process.env.PT_SITE_PASSWORD ?? "";
+          log.info("found siteId: %s & sitePass: %s", siteId, sitePassword);
           repository = new PtStorageRepositoryImpl(siteId, sitePassword);
           break;
+        }
         case "diskStorage":
           log.info("Disk Storage has been chosen as the default repository");
           repository = new DiskStorageRepositoryImpl<User>("User");
           break;
-        // add more cases for other repository types as needed
-        default:
+
+        default: // add more cases for other repository types as needed
           log.error(`Invalid repository name: ${repositoryName}`);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,14 +52,13 @@ function getRepository(): StorageRepository<User> {
 }
 
 /* 
-TO:DO: This should be merged with getRepository but it's taking time to implement 
+TODO: This should be merged with getRepository but it's taking time to implement 
 now. Plan to implement after MVP inshaAllah 
 note: by default chatRepository is using DiskStorage
 */
 let chatRepository: StorageRepository<Message> | null = null;
-function getChatRepository(): StorageRepository<Message> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
+function getChatRepository(): StorageRepository<Message> {
   if (!chatRepository) {
     log.info("initializing repository");
 

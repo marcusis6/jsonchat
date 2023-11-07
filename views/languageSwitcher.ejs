@@ -1,13 +1,23 @@
-  <!-- Language switcher in top right corner -->
-  <div class="container-fluid">
-    <div class="row justify-content-end">
-      <div class="col-auto lang-switcher mt-2">
-        <label for="lang-select"><%= getTranslation("select_language") %>:</label>
-        <select id="lang-select">
-          <option value="en" <% if (lang === 'en') { %>selected<% } %>>English</option>
-          <option value="bn" <% if (lang === 'bn') { %>selected<% } %>>বাংলা</option>
-        </select>
-      </div>
-    </div>
+<!-- Language selector with globe icon -->
+<div class="btn-group mr-2">
+  <button
+    type="button"
+    class="btn btn-outline-success dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <i class="fas fa-globe"></i>
+    <span id="selectedLanguage">বাংলা</span>
+  </button>
+  <div class="dropdown-menu" id="languageDropdown">
+    <!-- Dropdown items -->
+    <a class="dropdown-item" href="#" onclick="selectLanguage('বাংলা')">
+      বাংলা
+    </a>
+    <a class="dropdown-item" href="#" onclick="selectLanguage('English')">
+      English
+    </a>
+    <!-- Add more language options as needed -->
   </div>
-  </div>
+</div>

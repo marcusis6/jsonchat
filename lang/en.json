@@ -8,7 +8,8 @@
     "login": "Log In",
     "username": "Username",
     "password": "Password",
-    "confirm_password": "Confirm Password"
+    "confirm_password": "Confirm Password",
+    "new_password": "New Password"
   },
   "alert_user": {
     "reg_success": "You have been registered successfully. Please contact admin to active your account",

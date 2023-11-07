@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import {
   handleChatMessage,
+  handleDeleteChat,
   handleDeleteMessage,
   handleEditMessage,
   handleInitialMessages,
@@ -10,7 +11,7 @@ import {
 import broadcastUsersList from "../handlers/userHandler";
 import { Message } from "../models/Message";
 
-const SESSION_RELOAD_INTERVAL = 30 * 1000;
+// const SESSION_RELOAD_INTERVAL = 30 * 1000;
 
 function socketService(io: Server): void {
   // Define the event handler for socket connection
@@ -18,19 +19,19 @@ function socketService(io: Server): void {
     const sessionId = socket.request.session.id;
     socket.join(sessionId);
 
-    const timer = setInterval(() => {
-      socket.request.session.reload((err) => {
-        if (err) {
-          // forces the client to reconnect
-          socket.conn.close();
-          // you can also use socket.disconnect(), but in that case the client
-          // will not try to reconnect
-        }
-      });
-    }, SESSION_RELOAD_INTERVAL);
+    // const timer = setInterval(() => {
+    //   socket.request.session.reload((err) => {
+    //     if (err) {
+    //       // forces the client to reconnect
+    //       socket.conn.close();
+    //       // you can also use socket.disconnect(), but in that case the client
+    //       // will not try to reconnect
+    //     }
+    //   });
+    // }, SESSION_RELOAD_INTERVAL);
 
     socket.on("disconnect", () => {
-      clearInterval(timer);
+      // clearInterval(timer);
       broadcastUsersList(io);
     });
 
@@ -50,6 +51,11 @@ function socketService(io: Server): void {
     // Handle the "DeleteMessage" event
     socket.on("deleteMessage", (id, callback) => {
       handleDeleteMessage(id, socket, callback);
+    });
+
+    // Handle the "deleteChat" event
+    socket.on("deleteChat", (callback) => {
+      handleDeleteChat(socket, callback);
     });
 
     // Handle the "loadMoreMessages" event

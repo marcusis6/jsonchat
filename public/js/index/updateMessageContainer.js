@@ -6,14 +6,17 @@
  * @param {boolean} status.
  *
  */
-function updateMessage(messageElement, id, status) {
+function updateMessage(messageElement, updatedMessage, status) {
   const messageContent = messageElement.querySelector(".message-content");
 
   // add sequence id
-  messageContent.id = id;
+  messageContent.id = updatedMessage?.id;
 
   const statusElement = messageElement.querySelector(".status");
   const failedStatusElement = messageElement.querySelector(".failed-status");
+
+  const time = messageElement.querySelector(".time");
+  time.textContent = updatedMessage?.time;
 
   if (status) {
     // message successfully sent after retry
@@ -64,6 +67,6 @@ function stopLoadingSpinner(spinnerElement) {
 
 // Retry message send function
 function retryMessageSend(messageContent) {
-  sendMessage(messageContent.childNodes[0].textContent);
+  sendMessage(messageContent.querySelector("p").textContent);
   messageContent.parentNode.parentNode.remove();
 }

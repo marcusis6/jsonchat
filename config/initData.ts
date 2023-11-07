@@ -8,7 +8,7 @@ const log = logger(__filename);
 const insertDummyAdminUser = async (): Promise<void> => {
   try {
     const users = await getRepository().get();
-    const user = users.filter((user) => user.username === "admin"); // check if admin exists
+    const user = users.filter((user) => user.isSuperAdmin === true); // check if super admin exists
 
     if (user.length > 0) return; // admin id already exists
 

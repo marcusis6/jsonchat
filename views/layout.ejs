@@ -35,6 +35,7 @@ https://github.com/twbs/examples/blob/main/starter/index.html
     <%- include('./partials/confirmModal.ejs'); -%> <%-
     include('./partials/alertModal.ejs'); -%>
     <div id="alert-container" class="position-fixed bottom-0 end-0 p-3"></div>
+    <div hidden id="langPref"><%= lang %></div>
 
     <%- body %>
 
@@ -90,6 +91,11 @@ https://github.com/twbs/examples/blob/main/starter/index.html
       src="/js/index/soundControl.js"
       type="application/javascript"
     ></script>
+    <script
+      src="/js/index/usersWithStatus.js"
+      type="application/javascript"
+    ></script>
+    <script src="/js/index/reply.js" type="application/javascript"></script>
 
     <!-- load the script for admin users management  -->
     <script
@@ -116,5 +122,6 @@ https://github.com/twbs/examples/blob/main/starter/index.html
       src="/js/admin/changePassword.js"
       type="application/javascript"
     ></script>
+    <script src="/js/languageScript.js" type="application/javascript"></script>
   </body>
 </html>

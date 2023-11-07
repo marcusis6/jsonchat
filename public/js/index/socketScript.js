@@ -19,9 +19,9 @@ messageInput.addEventListener("keypress", async (event) => {
 
       event.preventDefault(); // Prevent the newline character from being inserted in the textarea
     } else if (messageInput.classList.contains("reply-mode")) {
-      const id = messageInput.getAttribute("sequence-id");
-
-      replyMessage(id);
+      const replyId = messageInput.getAttribute("sequence-id");
+      sendMessage(messageInput.value, replyId);
+      cancelReply(replyId);
 
       event.preventDefault(); // Prevent the newline character from being inserted in the textarea
     } else {
@@ -31,41 +31,45 @@ messageInput.addEventListener("keypress", async (event) => {
   }
 });
 
-function sendMessage(message) {
+function sendMessage(message, replyId = null) {
+  // message text
+  let msg = { text: message, username: currentUsername };
+
+  // add message reply to message
+  if (replyId) {
+    const info = getReplyToInfo(replyId);
+
+    msg.replyTo = { username: info.username, text: info.message };
+  }
+
   const newMessage = displayMessage(
-    {
-      text: message,
-      username: currentUsername,
-      id: "", // later sequence id  will come from server response
-    },
+    msg,
     true // loading
   );
 
   scrollToLastMessage();
 
   // Emit the chatMessage event to the server with the message and message ID and timeout
-  socket
-    .timeout(15000)
-    .emit("chatMessage", { text: message }, (err, response) => {
-      if (err) {
-        // Handle the case where the server did not acknowledge the event
-        console.error("Error:", err);
+  socket.timeout(15000).emit("chatMessage", msg, (err, response) => {
+    if (err) {
+      // Handle the case where the server did not acknowledge the event
+      console.error("Error:", err);
 
-        // Display "Message Sent Failed" status for the message
-        updateMessage(newMessage, "", false);
-      } else {
-        const updatedMessage = JSON.parse(response);
+      // Display "Message Sent Failed" status for the message
+      updateMessage(newMessage, null, false);
+    } else {
+      const updatedMessage = JSON.parse(response);
 
-        if (assertMessageSequence(updatedMessage)) {
-          receivedMessages.push(updatedMessage);
+      if (assertMessageSequence(updatedMessage)) {
+        receivedMessages.push(updatedMessage);
 
-          console.log("Acknowledgement received:", updatedMessage);
+        console.log("Acknowledgement received:", updatedMessage);
 
-          // Display check mark for successful message sending
-          updateMessage(newMessage, updatedMessage.id, true);
-        }
+        // Display check mark for successful message sending
+        updateMessage(newMessage, updatedMessage, true);
       }
-    });
+    }
+  });
 
   messageInput.value = "";
 }
@@ -125,24 +129,6 @@ const requestMissingMessages = async (id) => {
       }
     });
 };
-
-// Listen for "activeUsersList" event
-socket.on("activeUsersList", (activeUsers) => {
-  // Update the active users display
-  displayActiveUsers(activeUsers);
-});
-
-// Function to display active users in the frontend
-function displayActiveUsers(users) {
-  const activeUserList = document.getElementById("activeUserList");
-  activeUserList.innerHTML = "";
-
-  users.forEach((userId) => {
-    const listItem = document.createElement("li");
-    listItem.textContent = userId;
-    activeUserList.appendChild(listItem);
-  });
-}
 
 // Emit 'InitialMessages' event to the server
 socket.timeout(15000).emit("InitialMessages", (err, response) => {

@@ -8,17 +8,22 @@
       </li>
     </ul>
 
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/api/changePassword"
-          ><i class="fas fa-key"></i> Change Password</a
-        >
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/auth/logout"
-          ><i class="fas fa-sign-out-alt"></i> Logout</a
-        >
-      </li>
-    </ul>
+    <form class="form-inline d-flex justify-content-end">
+      <!-- Button group for Volume, Change Password, and Logout buttons -->
+      <div class="btn-group" role="group">
+        <!-- Language selector with globe icon -->
+        <%- include('../languageSwitcher'); -%>
+
+        <!-- Change Password button with key icon -->
+        <a class="btn btn-outline-success" href="/api/changePassword">
+          <i class="fas fa-key"></i>চেঞ্জ পাসওয়ার্ড
+        </a>
+
+        <!-- Logout button with sign-out icon -->
+        <a href="/auth/logout" class="btn btn-outline-success" type="button">
+          <i class="fas fa-sign-out-alt"></i>লগ আউট
+        </a>
+      </div>
+    </form>
   </div>
 </nav>

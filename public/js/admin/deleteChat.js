@@ -1,3 +1,17 @@
+// Listen for edited message events from the server
+socket.on("chatDeleted", () => {
+  receivedMessages = [];
+  chatBox.innerHTML = "";
+  // Show success alert
+  showAlertModal(
+    "Success",
+    "Chat deleted successfully by admin",
+    "success",
+    true,
+    3000
+  );
+});
+
 const handleConfirmDeleteChat = async () => {
   // Disable all buttons temporarily
   disableButtons();
@@ -9,33 +23,22 @@ const handleConfirmDeleteChat = async () => {
     // Perform the request after a delay of 1000 milliseconds
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const response = await fetch(`/api/chat/all/delete`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+    // Emit socket request to delete the message
+    socket.timeout(15000).emit("deleteChat", async (err, response) => {
+      if (err) {
+        // Handle the case where the server did not acknowledge the event
+        showAlertModal("Error", "Failed to delete chat", "danger", true, 5000);
+      } else {
+        // Show success alert
+        showAlertModal(
+          "Success",
+          "Chat deleted successfully",
+          "success",
+          true,
+          3000
+        );
+      }
     });
-
-    if (response.ok) {
-      // Show success alert
-      showAlertModal(
-        "Success",
-        "All messages deleted successfully",
-        "success",
-        true,
-        3000
-      );
-    } else {
-      const errorData = await response.json();
-      console.log(errorData.errorMessage);
-      showAlertModal(
-        "Error",
-        "Failed to delete messages",
-        "danger",
-        true,
-        5000
-      );
-    }
   } catch (error) {
     console.error("An error occurred:", error);
   } finally {
@@ -49,8 +52,6 @@ const handleConfirmDeleteChat = async () => {
 
 const deleteButton = document.getElementById("delete-chat");
 deleteButton.addEventListener("click", async (event) => {
-  const deleteButton = event.target;
-
   openConfirmModal(() => {
     handleConfirmDeleteChat();
   });

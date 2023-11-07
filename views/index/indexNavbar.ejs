@@ -23,32 +23,11 @@
   <ul class="navbar-nav px-3 noticeSection col-lg-6 col-md-4 col-sm-12">
     <li id="noticeBoard" class="nav-item text-nowrap"></li>
   </ul>
-  <!-- Example: index.ejs -->
   <form class="form-inline d-flex justify-content-end">
     <!-- Button group for Volume, Change Password, and Logout buttons -->
     <div class="btn-group" role="group">
       <!-- Language selector with globe icon -->
-      <div class="btn-group mr-2">
-        <button
-          type="button"
-          class="btn btn-outline-success dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          <i class="fas fa-globe"></i> <span id="selectedLanguage">বাংলা</span>
-        </button>
-        <div class="dropdown-menu" id="languageDropdown">
-          <!-- Dropdown items -->
-          <a class="dropdown-item" href="#" onclick="selectLanguage('বাংলা')">
-            বাংলা
-          </a>
-          <a class="dropdown-item" href="#" onclick="selectLanguage('English')">
-            English
-          </a>
-          <!-- Add more language options as needed -->
-        </div>
-      </div>
+      <%- include('../languageSwitcher'); -%>
 
       <!-- Volume icon -->
       <button id="volume-btn" class="btn btn-outline-success">
@@ -66,34 +45,6 @@
       </a>
     </div>
   </form>
-
-  <!-- Initialize the Bootstrap dropdown component -->
-  <script>
-    function selectLanguage(language) {
-      document.getElementById("selectedLanguage").textContent = language;
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      var languageDropdownToggle = document.getElementById(
-        "languageDropdownToggle"
-      );
-      var languageDropdown = document.getElementById("languageDropdown");
-
-      languageDropdownToggle.addEventListener("click", function () {
-        languageDropdown.classList.toggle("show");
-      });
-
-      window.addEventListener("click", function (event) {
-        if (
-          !event.target.matches("#languageDropdownToggle") &&
-          !event.target.matches("#languageDropdown") &&
-          !event.target.matches(".dropdown-item")
-        ) {
-          languageDropdown.classList.remove("show");
-        }
-      });
-    });
-  </script>
 </nav>
 
 <div class="toggle">

@@ -76,7 +76,7 @@ const editListItemById = async (id, text) => {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // first child node is <p> which holds the message
-    messageContent.childNodes[0].textContent = text;
+    messageContent.querySelector("p").textContent = text;
 
     leaveEditMode();
 

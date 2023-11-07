@@ -570,3 +570,117 @@ body {
   cursor: pointer;
   color: #888; /* Adjust the color as per your design */
 }
+
+
+.chat-message {
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.username {
+  margin: 0;
+  font-weight: bold;
+}
+
+.time {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.message-text {
+  margin: 0;
+}
+
+.message-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.status,
+.seen-status {
+  margin-left: 10px;
+  color: #777;
+  font-size: 14px;
+}
+
+.fa-check-double {
+  color: #1dbf1d;
+}
+
+.fa-check {
+  color: #999;
+}
+
+
+/* active user list  */
+.user-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.user-avatar {
+  flex: 0 0 50px;
+  margin-right: 10px;
+  font-size: 24px;
+}
+
+.user-info {
+  flex-grow: 1;
+}
+
+.user-name {
+  margin: 0;
+}
+
+.user-status {
+  margin: 0;
+}
+
+.online {
+  color: green;
+}
+
+.offline {
+  color: red;
+}
+
+.user-time {
+  flex: 0 0 80px;
+  text-align: right;
+}
+
+/* reply message */
+
+.replied-to {
+  background-color: #e8e8e8;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.replied-to .replied-content {
+  font-style: italic;
+  margin-bottom: 5px;
+}
+
+.replied-to .replied-message {
+  font-weight: bold;
+}

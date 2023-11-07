@@ -51,7 +51,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
 const logout = async (req: Request, res: Response): Promise<any> => {
   if (!req.session.userInfo || !req.session.userInfo.username)
-    return res.sendStatus(403);
+    return res.redirect("/auth/login");
   else {
     try {
       // first destroy socket session

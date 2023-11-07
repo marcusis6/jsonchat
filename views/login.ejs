@@ -1,3 +1,13 @@
+<!-- Language switcher in top right corner -->
+<div class="container-fluid">
+  <div class="row justify-content-end">
+    <div class="col-auto lang-switcher mt-2">
+      <div class="btn-group" role="group">
+        <%- include('./languageSwitcher'); -%>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container">
   <div class="row mt-5">
     <div class="col-md-6 mx-auto">
@@ -7,25 +17,41 @@
             <i class="fa-regular fa-user"></i> <%= getTranslation(title) %>
           </h1>
           <%- include('./partials/alerts'); -%>
-          <form id="login-form" action="/auth/login?lang=<%= lang %>" method="POST">
+          <form
+            id="login-form"
+            action="/auth/login?lang=<%= lang %>"
+            method="POST"
+          >
             <div class="mb-3">
-              <label for="username" class="form-label"><%= getTranslation("user.username") %></label>
-              <input type="username" id="username" name="username" class="form-control" autocomplete="off" placeholder="<%=
+              <label for="username" class="form-label"
+                ><%= getTranslation("user.username") %></label
+              >
+              <input type="username" id="username" name="username"
+              class="form-control" autocomplete="off" placeholder="<%=
               getTranslation("placeholder.username") %>" />
             </div>
             <div class="mb-3">
-              <label for="password" class="form-label"><%= getTranslation("user.password") %></label>
-              <input type="password" id="password" name="password" class="form-control" autocomplete="off" placeholder="<%=
+              <label for="password" class="form-label"
+                ><%= getTranslation("user.password") %></label
+              >
+              <input type="password" id="password" name="password"
+              class="form-control" autocomplete="off" placeholder="<%=
               getTranslation("placeholder.password") %>" />
             </div>
-            <button id="login-btn" type="submit" class="btn btn-primary btn-block">
+            <button
+              id="login-btn"
+              type="submit"
+              class="btn btn-primary btn-block"
+            >
               <%= getTranslation("button.submit") %>
               <span id="login-btn-spinner"> </span>
             </button>
           </form>
           <p class="lead mt-4">
             <%= getTranslation("lead.register") %>
-            <a href="/auth/register?lang=<%= lang %>"><%= getTranslation("user.register") %></a>
+            <a href="/auth/register?lang=<%= lang %>"
+              ><%= getTranslation("user.register") %></a
+            >
           </p>
         </div>
       </div>

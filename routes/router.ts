@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { deleteChat, downloadChat } from "../controllers/chatContorller";
+import { downloadChat } from "../controllers/chatContorller";
 import {
   getUsers,
   addUser,
@@ -68,8 +68,6 @@ router.put("/users/:id/suspend", suspendUser);
 
 router.put("/users/:id/unsuspend", unsuspendUser);
 
-/* Chat Route */
-router.put("/chat/all/delete", deleteChat);
 // Define the route for downloading the chat JSON file
 router.get("/chat/download", downloadChat);
 

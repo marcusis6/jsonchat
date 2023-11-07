@@ -11,7 +11,10 @@ sidebarToggle.addEventListener("click", function () {
   sidebarWrapper.style.display = isActive ? "" : "none";
 
   // Toggle the div classes on the main section based on the active state
-  mainSection.classList.remove("col-md-9", "col-lg-10");
+  mainSection.classList.remove(
+    isActive ? "col-md-12" : "col-md-9",
+    isActive ? "col-lg-12" : "col-lg-10"
+  );
   mainSection.classList.add(
     isActive ? "col-md-9" : "col-md-12",
     isActive ? "col-lg-10" : "col-lg-12"

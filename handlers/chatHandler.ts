@@ -29,6 +29,7 @@ async function handleChatMessage(
     message.id = id.toString();
     message.username = socket?.request?.session?.userInfo?.username;
     message.sender = socket?.id;
+    message.time = getTimeString();
 
     // save
     const result = await repository.add(message);
@@ -189,6 +190,36 @@ async function handleEditMessage(
   }
 }
 
+// Define the handler function for the "deleteMessage" event
+async function handleDeleteChat(
+  socket: Socket,
+  callback: (arg0: string) => void
+): Promise<void> {
+  log.info(`Received delete chat request.`);
+
+  try {
+    if (!socket.request.session.userInfo.isAdmin)
+      throw ClientError.accessDeniedError();
+
+    // Get the repository
+    const repository = getChatRepository();
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    await repository.removeAll();
+
+    // Call the callback function to acknowledge the event
+    if (typeof callback === "function") {
+      callback("ok");
+    }
+
+    // Broadcast the edited message to all connected clients except the sender
+    socket.broadcast.emit("chatDeleted");
+  } catch (err) {
+    log.error(err);
+  }
+}
+
 async function handleDeleteMessage(
   id: string,
   socket: Socket,
@@ -220,6 +251,19 @@ async function handleDeleteMessage(
   }
 }
 
+const getTimeString = () => {
+  const options = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+    timeZone: "Asia/Dhaka",
+  };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const currentTime = new Date().toLocaleTimeString("en-US", options);
+  return currentTime;
+};
+
 export {
   handleChatMessage,
   handleMissingMessage,
@@ -227,4 +271,5 @@ export {
   handleLoadMoreMessages,
   handleEditMessage,
   handleDeleteMessage,
+  handleDeleteChat,
 };
