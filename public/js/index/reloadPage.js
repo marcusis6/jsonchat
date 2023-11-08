@@ -14,4 +14,4 @@ function startCountdown(minutes) {
 }
 
 // Set the initial countdown time (30 minutes = 30)
-startCountdown(29);
+startCountdown(14);
