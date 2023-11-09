@@ -45,6 +45,7 @@ const generateSingleMessage = (message, loading = false) => {
   // Create a message content element
   const messageContent = document.createElement("div");
   messageContent.classList.add("message-content");
+  messageContainer.style.whiteSpace = "pre-line";
   messageContent.id = message.id; // Set the message ID
 
   const paragraph = document.createElement("p");

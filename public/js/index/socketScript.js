@@ -10,6 +10,26 @@ const currentUsername = document.getElementById("current-username").textContent;
 
 const messageInput = document.getElementById("message");
 
+// Check if there is saved data in localStorage
+if (localStorage.getItem("savedData")) {
+  // If yes, parse the saved JSON data
+  var savedData = JSON.parse(localStorage.getItem("savedData"));
+
+  // Set the textarea value and height from the saved data
+  messageInput.value = savedData.text;
+  messageInput.style.height = savedData.height;
+}
+
+// Add an event listener for input on the textarea
+messageInput.addEventListener("input", function () {
+  // Save the current text and height in localStorage
+  var dataToSave = {
+    text: messageInput.value,
+    height: messageInput.style.height
+  };
+  localStorage.setItem("savedData", JSON.stringify(dataToSave));
+});
+
 messageInput.addEventListener("keypress", async (event) => {
   if (event.which == 13 && !event.shiftKey && messageInput.value.trim() != "") {
     if (messageInput.classList.contains("edit-mode")) {
