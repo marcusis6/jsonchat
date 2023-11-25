@@ -216,3 +216,10 @@ document.body.addEventListener("input", function (event) {
     textarea.style.height = textarea.scrollHeight + 1 + "px";
   }
 });
+
+const audio = new Audio();
+
+socket.on('audio-data', (blob) => {
+  console.log("rcvd");
+  playAudio(blob);
+});

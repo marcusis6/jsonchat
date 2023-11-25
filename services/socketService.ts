@@ -10,6 +10,8 @@ import {
 } from "../handlers/chatHandler";
 import broadcastUsersList from "../handlers/userHandler";
 import { Message } from "../models/Message";
+const ss = require('socket.io-stream');
+const fs = require('fs');
 
 // const SESSION_RELOAD_INTERVAL = 30 * 1000;
 
@@ -79,6 +81,28 @@ function socketService(io: Server): void {
     // Event listener for requesting missing messages
     socket.on("requestMissingMessages", (id, callback) => {
       handleMissingMessage(id, callback);
+    });
+
+    // Listen for audio stream
+    socket.on('audio-stream', (blob: any) => {
+      console.log('Audio stream received');
+
+      socket.broadcast.emit('audio-data', blob);
+      
+      // Optionally, you can save the audio stream to the server
+      // const filename = `audio_${Date.now()}.wav`;
+      // const writableStream = fs.createWriteStream(filename);
+      // stream.pipe(writableStream);
+
+      // Create a new stream for broadcasting
+      // const broadcastStream = ss.createStream();
+
+      // // Broadcast the audio stream to all connected clients except the sender
+      // io.emit('audio-data', broadcastStream);
+
+      // // Pipe the received stream to the broadcast stream
+      // stream.pipe(broadcastStream);
+
     });
   };
 
