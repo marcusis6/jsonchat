@@ -48,7 +48,7 @@ function audiostream(cc,ce) {
     recorder=new oldstream(stream);
     //recorder.mimeType = 'audio/webm';
     recorder.ondataavailable = cpipe;
-    recorder.start(1000);
+    recorder.start(4000);
     console.log(recorder);
     cc(recorder);
   }
